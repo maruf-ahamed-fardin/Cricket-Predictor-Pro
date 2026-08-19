@@ -42,16 +42,14 @@ function initNavigation() {
         });
     }
 
-    // Solidify navbar background on scroll
+    // Solidify navbar background on scroll via CSS classes (theme-aware)
     const navbar = document.getElementById('navbar');
     if (navbar) {
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                navbar.style.background = 'rgba(6, 8, 15, 0.97)';
-                navbar.style.boxShadow  = '0 4px 16px rgba(0,0,0,0.4)';
+            if (window.scrollY > 30) {
+                navbar.classList.add('navbar-scrolled');
             } else {
-                navbar.style.background = 'rgba(6, 8, 15, 0.85)';
-                navbar.style.boxShadow  = 'none';
+                navbar.classList.remove('navbar-scrolled');
             }
         }, { passive: true });
     }

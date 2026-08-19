@@ -6,6 +6,10 @@
     <meta name="description" content="Cricket Predictor Pro — AI-powered cricket statistics prediction for T10, T20, ODI, and Test formats using 3 machine learning models.">
     <title>{% block title %}Cricket Predictor Pro{% endblock %}</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="shortcut icon" type="image/svg+xml" href="{{ url_for('static', filename='img/favicon.svg') }}">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +34,7 @@
     <nav class="navbar" id="navbar">
         <div class="nav-container">
             <a href="/" class="nav-brand">
-                <span class="brand-icon">🏏</span>
+                <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Cricket Predictor Pro Logo" class="brand-logo-img">
                 <span class="brand-text">Cricket Predictor <span class="brand-pro">Pro</span></span>
             </a>
 
@@ -83,7 +87,7 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-brand">
-                <span class="brand-icon">🏏</span>
+                <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Cricket Predictor Pro Logo" class="footer-logo-img">
                 <span>Cricket Predictor Pro</span>
             </div>
             <p class="footer-text">

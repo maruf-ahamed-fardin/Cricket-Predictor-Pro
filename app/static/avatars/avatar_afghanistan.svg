@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad_AFG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="60%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+    <linearGradient id="jerseyGrad_AFG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <filter id="glow_AFG">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Circular Outer Frame -->
+  <circle cx="200" cy="200" r="190" fill="url(#bgGrad_AFG)" stroke="#22c55e" stroke-width="8" filter="url(#glow_AFG)"/>
+  <circle cx="200" cy="200" r="176" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="8 6"/>
+
+  <!-- Stadium Stadium Background Silhouette -->
+  <path d="M 30 260 Q 200 230 370 260 L 370 380 L 30 380 Z" fill="rgba(0,0,0,0.35)"/>
+  <circle cx="200" cy="90" r="45" fill="rgba(255,255,255,0.06)"/>
+
+  <!-- Player Torso & Jersey -->
+  <path d="M 110 390 C 110 310, 145 270, 200 270 C 255 270, 290 310, 290 390 Z" fill="url(#jerseyGrad_AFG)" stroke="#22c55e" stroke-width="4"/>
+  <!-- Jersey Collar & Accents -->
+  <polygon points="175,270 200,315 225,270 210,270 200,290 190,270" fill="#22c55e"/>
+  <path d="M 150 320 Q 200 340 250 320" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+
+  <!-- Jersey Emblem / Country Text -->
+  <rect x="160" y="335" width="80" height="28" rx="14" fill="rgba(0,0,0,0.5)" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="200" y="354" font-family="'Inter', sans-serif" font-weight="900" font-size="14" fill="#22c55e" text-anchor="middle" letter-spacing="1.5">AFG</text>
+
+  <!-- Player Neck -->
+  <rect x="182" y="215" width="36" height="60" rx="10" fill="#e2a87c"/>
+
+  <!-- Player Head -->
+  <ellipse cx="200" cy="180" rx="46" ry="54" fill="#f1b98d"/>
+
+  <!-- Beard / Hair Style -->
+  <path d="M 156 160 C 152 220, 170 240, 200 240 C 230 240, 248 220, 244 160 C 238 180, 230 195, 200 195 C 170 195, 162 180, 156 160 Z" fill="#2d1d14" opacity="0.85"/>
+  <!-- Smile -->
+  <path d="M 188 208 Q 200 218 212 208" fill="none" stroke="#78350f" stroke-width="3" stroke-linecap="round"/>
+  <!-- Eyes -->
+  <circle cx="184" cy="175" r="4.5" fill="#1e1b18"/>
+  <circle cx="216" cy="175" r="4.5" fill="#1e1b18"/>
+  <circle cx="185.5" cy="173.5" r="1.5" fill="#ffffff"/>
+  <circle cx="217.5" cy="173.5" r="1.5" fill="#ffffff"/>
+
+  <!-- Cricket Helmet / Cap -->
+  <path d="M 148 165 C 145 105, 255 105, 252 165 C 235 150, 165 150, 148 165 Z" fill="#2563eb" stroke="#22c55e" stroke-width="3"/>
+  <path d="M 144 162 Q 200 148 256 162 L 268 170 Q 200 152 132 170 Z" fill="#dc2626"/>
+  <!-- Cap Badge -->
+  <circle cx="200" cy="135" r="14" fill="#22c55e"/>
+  <text x="200" y="140" font-family="'Inter', sans-serif" font-weight="900" font-size="12" fill="#0f172a" text-anchor="middle">🇦🇫</text>
+
+  <!-- Cricket Bat / Ball Silhouette (Right) -->
+  <g transform="translate(280, 110) rotate(25) scale(0.7)">
+    <rect x="0" y="0" width="14" height="120" rx="5" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+    <circle cx="7" cy="-12" r="12" fill="#ef4444"/>
+  </g>
+
+  <!-- Top Title Badge -->
+  <g transform="translate(200, 35)">
+    <rect x="-85" y="-16" width="170" height="32" rx="16" fill="rgba(6,9,19,0.85)" stroke="#22c55e" stroke-width="2"/>
+    <text x="0" y="5" font-family="'Inter', sans-serif" font-weight="800" font-size="13" fill="#ffffff" text-anchor="middle">Afghanistan</text>
+  </g>
+</svg>

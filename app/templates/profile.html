@@ -9,7 +9,7 @@
             <span class="section-badge">👤 User Profile</span>
             <h1 class="section-title" style="font-size:2rem;">My Cricket Profile</h1>
             <p class="section-subtitle" style="margin:0; text-align:left;">
-                Personalise your avatar, name, and cricket preferences. Saved in your browser.
+                Personalise your country avatar, photo, and preferences. Saved instantly in your browser.
             </p>
         </div>
 
@@ -18,11 +18,11 @@
             <!-- ── Left: Avatar Card ─────────────────────────────────────── -->
             <div class="glass-card profile-avatar-card">
 
-                <!-- Current Avatar -->
+                <!-- Current Avatar Preview -->
                 <div class="avatar-wrapper" style="margin:0 auto 20px;">
                     <img id="avatarPreview" class="avatar-img" src="" alt="Profile photo" style="display:none;">
                     <div class="avatar-placeholder" id="avatarPlaceholder">🏏</div>
-                    <button class="avatar-edit-btn" id="avatarEditBtn" title="Upload your own photo">📷</button>
+                    <button class="avatar-edit-btn" id="avatarEditBtn" title="Upload custom photo">📷</button>
                 </div>
                 <input type="file" id="avatarInput" accept="image/*" style="display:none;">
 
@@ -48,16 +48,75 @@
                     </div>
                     <div class="stat-mini">
                         <div class="stat-mini-value" id="displayPredictions">0</div>
-                        <div class="stat-mini-label">Runs Predicted</div>
+                        <div class="stat-mini-label">Predicted</div>
                     </div>
                 </div>
 
-                <!-- Default Avatar Picker -->
+                <!-- Country Avatars Section -->
                 <div class="avatar-picker-section">
-                    <div class="profile-section-title" style="justify-content:center; margin-bottom:14px;">
-                        🎭 Choose Avatar
+                    <div class="profile-section-title" style="justify-content:center; margin-bottom:12px;">
+                        🌍 Cricket Nations Avatars
                     </div>
-                    <div class="default-avatars-grid" id="defaultAvatarsGrid">
+                    <div class="default-avatars-grid country-avatars-grid" id="countryAvatarsGrid">
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_bangladesh.jpg" data-label="Bangladesh">
+                            <img src="/static/avatars/avatar_bangladesh.jpg" alt="Bangladesh" loading="lazy">
+                            <span>🇧🇩 Bangladesh</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_india.jpg" data-label="India">
+                            <img src="/static/avatars/avatar_india.jpg" alt="India" loading="lazy">
+                            <span>🇮🇳 India</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_pakistan.jpg" data-label="Pakistan">
+                            <img src="/static/avatars/avatar_pakistan.jpg" alt="Pakistan" loading="lazy">
+                            <span>🇵🇰 Pakistan</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_australia.svg" data-label="Australia">
+                            <img src="/static/avatars/avatar_australia.svg" alt="Australia" loading="lazy">
+                            <span>🇦🇺 Australia</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_england.jpg" data-label="England">
+                            <img src="/static/avatars/avatar_england.jpg" alt="England" loading="lazy">
+                            <span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_southafrica.jpg" data-label="South Africa">
+                            <img src="/static/avatars/avatar_southafrica.jpg" alt="South Africa" loading="lazy">
+                            <span>🇿🇦 S. Africa</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_newzealand.svg" data-label="New Zealand">
+                            <img src="/static/avatars/avatar_newzealand.svg" alt="New Zealand" loading="lazy">
+                            <span>🇳🇿 N. Zealand</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_srilanka.svg" data-label="Sri Lanka">
+                            <img src="/static/avatars/avatar_srilanka.svg" alt="Sri Lanka" loading="lazy">
+                            <span>🇱🇰 Sri Lanka</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_westindies.svg" data-label="West Indies">
+                            <img src="/static/avatars/avatar_westindies.svg" alt="West Indies" loading="lazy">
+                            <span>🏝️ W. Indies</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_afghanistan.svg" data-label="Afghanistan">
+                            <img src="/static/avatars/avatar_afghanistan.svg" alt="Afghanistan" loading="lazy">
+                            <span>🇦🇫 Afghanistan</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_ireland.svg" data-label="Ireland">
+                            <img src="/static/avatars/avatar_ireland.svg" alt="Ireland" loading="lazy">
+                            <span>☘️ Ireland</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_zimbabwe.svg" data-label="Zimbabwe">
+                            <img src="/static/avatars/avatar_zimbabwe.svg" alt="Zimbabwe" loading="lazy">
+                            <span>🇿🇼 Zimbabwe</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_netherlands.svg" data-label="Netherlands">
+                            <img src="/static/avatars/avatar_netherlands.svg" alt="Netherlands" loading="lazy">
+                            <span>🇳🇱 Netherlands</span>
+                        </div>
+                    </div>
+
+                    <!-- Role Avatars -->
+                    <div class="profile-section-title" style="justify-content:center; margin-top:20px; margin-bottom:12px;">
+                        🏏 Cricket Roles
+                    </div>
+                    <div class="default-avatars-grid" id="roleAvatarsGrid">
                         <div class="default-avatar-item" data-src="/static/avatars/avatar_batsman.jpg" data-label="Batsman">
                             <img src="/static/avatars/avatar_batsman.jpg" alt="Batsman" loading="lazy">
                             <span>🏏 Batsman</span>
@@ -83,8 +142,8 @@
                             <span>📊 Analyst</span>
                         </div>
                     </div>
-                    <p style="font-size:0.78rem; color:var(--text-muted); text-align:center; margin-top:8px;">
-                        Click to select · or upload your own photo ↑
+                    <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px;">
+                        Click avatar to select · or click 📷 above to upload custom photo
                     </p>
                 </div>
             </div>
@@ -129,6 +188,9 @@
                                 <option value="Sri Lanka">🇱🇰 Sri Lanka</option>
                                 <option value="West Indies">🏝️ West Indies</option>
                                 <option value="Afghanistan">🇦🇫 Afghanistan</option>
+                                <option value="Ireland">☘️ Ireland</option>
+                                <option value="Zimbabwe">🇿🇼 Zimbabwe</option>
+                                <option value="Netherlands">🇳🇱 Netherlands</option>
                                 <option value="Other">🌍 Other</option>
                             </select>
                         </div>
@@ -216,7 +278,7 @@ function setAvatar(src) {
     } else {
         prev.style.display = 'none'; ph.style.display = 'flex';
     }
-    // Mark selected in grid
+    // Mark active in both grids
     document.querySelectorAll('.default-avatar-item').forEach(el => {
         el.classList.toggle('active', el.dataset.src === src);
     });
@@ -255,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
     populateForm(profile);
     updateDisplayCard(profile);
 
-    // Default avatar grid clicks
+    // Avatar item clicks for all avatar grids
     document.querySelectorAll('.default-avatar-item').forEach(item => {
         item.addEventListener('click', () => {
             const src = item.dataset.src;
@@ -263,12 +325,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cur.avatar = src;
             saveProfile(cur);
             setAvatar(src);
-            // Update navbar avatar immediately
-            if (window.updateNavbarAvatar) window.updateNavbarAvatar(src);
+            if (window.updateNavbarAvatar) window.updateNavbarAvatar(src, cur.name || '');
         });
     });
 
-    // Upload own photo
+    // Upload custom photo
     document.getElementById('avatarEditBtn').addEventListener('click', () => {
         document.getElementById('avatarInput').click();
     });
@@ -282,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cur.avatar = src;
             saveProfile(cur);
             setAvatar(src);
-            if (window.updateNavbarAvatar) window.updateNavbarAvatar(src);
+            if (window.updateNavbarAvatar) window.updateNavbarAvatar(src, cur.name || '');
         };
         reader.readAsDataURL(file);
     });
@@ -299,9 +360,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('saveProfileBtn').addEventListener('click', () => {
         const cur = loadProfile();
         const favFormat = document.querySelector('#fmtSelector .badge-option.selected')?.dataset.val || 'T20';
+        const nameVal = document.getElementById('inputName').value.trim() || 'Cricket Fan';
         const data = {
             ...cur,
-            name: document.getElementById('inputName').value.trim() || 'Cricket Fan',
+            name: nameVal,
             username: document.getElementById('inputUsername').value.trim(),
             email: document.getElementById('inputEmail').value.trim(),
             bio: document.getElementById('inputBio').value.trim(),
@@ -313,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         saveProfile(data);
         updateDisplayCard(data);
-        if (window.updateNavbarAvatar) window.updateNavbarAvatar(data.avatar);
+        if (window.updateNavbarAvatar) window.updateNavbarAvatar(data.avatar, data.name);
         const banner = document.getElementById('saveBanner');
         banner.classList.add('visible');
         setTimeout(() => banner.classList.remove('visible'), 3500);
