@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}{{ fmt_config.name }} {{ target_info.name }} Prediction — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section predict-section">
+    <div class="section-container">
+        <!-- Header -->
+        <div class="predict-header">
+            <div class="predict-breadcrumb">
+                <a href="/">Home</a> / <a href="/predict/{{ fmt }}">{{ fmt_config.name }}</a> / {{ target_info.name }}
+            </div>
+            <h1 class="predict-title">
+                <span class="predict-icon">{{ target_info.icon }}</span>
+                {{ target_info.name }}
+                <span class="predict-format-badge format-color-{{ fmt }}">{{ fmt_config.name }}</span>
+            </h1>
+            <p class="predict-subtitle">{{ target_info.description }} in {{ fmt_config.name }} format</p>
+        </div>
+
+        <!-- Format & Target Switcher -->
+        <div class="switcher-row">
+            <div class="switcher-group">
+                <label class="switcher-label">Format</label>
+                <div class="switcher-buttons" id="formatSwitcher">
+                    {% for key, cfg in formats.items() %}
+                    <a href="/predict/{{ key }}?target={{ target_key }}"
+                       class="switcher-btn {% if key == fmt %}switcher-btn-active{% endif %}">
+                        {{ cfg.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="switcher-group">
+                <label class="switcher-label">Target</label>
+                <div class="target-slider-wrapper">
+                    <button class="slider-arrow slider-arrow-left" id="sliderLeft" aria-label="Scroll left">&#8249;</button>
+                    <div class="target-slider-track" id="targetSlider">
+                        {% for key, info in targets.items() %}
+                        <a href="/predict/{{ fmt }}?target={{ key }}"
+                           class="switcher-btn {% if key == target_key %}switcher-btn-active{% endif %}"
+                           data-target-key="{{ key }}">
+                            {{ info.icon }} {{ info.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <button class="slider-arrow slider-arrow-right" id="sliderRight" aria-label="Scroll right">&#8250;</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="predict-layout">
+            <!-- Prediction Form -->
+            <div class="predict-form-card glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 Input Features</h2>
+                    <p class="card-subtitle">Enter match conditions to get predictions</p>
+                </div>
+
+                <form method="POST" action="/predict/{{ fmt }}" id="predictForm">
+                    <input type="hidden" name="target_key" value="{{ target_key }}">
+
+                    <div class="form-grid">
+                        {% for col in feature_cols %}
+                        <div class="form-group">
+                            <label for="{{ col }}" class="form-label">
+                                {{ labels.get(col, col) }}
+                            </label>
+                            <input
+                                type="number"
+                                step="any"
+                                id="{{ col }}"
+                                name="{{ col }}"
+                                value="{{ defaults.get(col, 0) }}"
+                                class="form-input"
+                                required
+                            >
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" id="predictBtn">
+                            <span class="btn-text">🔮 Predict with All 3 Models</span>
+                            <span class="btn-loading" style="display:none;">
+                                <span class="spinner"></span> Predicting...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results -->
+            <div class="predict-results-card glass-card" id="resultsCard">
+                {% if result %}
+                <div class="card-header">
+                    <h2 class="card-title">📊 Prediction Results</h2>
+                    <p class="card-subtitle">{{ result.format }} — {{ result.target }}</p>
+                </div>
+
+                <!-- Best Model Highlight -->
+                {% if result.best_model %}
+                <div class="best-model-banner">
+                    <div class="best-model-badge">🏆 Best Model</div>
+                    <div class="best-model-name">{{ result.best_model }}</div>
+                    <div class="best-model-value">
+                        {{ result.predictions[result.best_model].value }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Model Results Cards -->
+                <div class="results-grid">
+                    {% for model_name, pred in result.predictions.items() %}
+                    <div class="result-card {% if model_name == result.best_model %}result-card-best{% endif %}">
+                        {% if model_name == result.best_model %}
+                        <div class="result-best-badge">🏆 Best</div>
+                        {% endif %}
+                        <h3 class="result-model-name">{{ model_name }}</h3>
+                        <div class="result-value">{{ pred.value }}</div>
+                        <div class="result-metrics">
+                            <div class="result-metric">
+                                <span class="metric-label">MAE</span>
+                                <span class="metric-value">{{ pred.mae }}</span>
+                            </div>
+                            <div class="result-metric">
+                                <span class="metric-label">R²</span>
+                                <span class="metric-value">{{ pred.r2 }}</span>
+                            </div>
+                            <div class="result-metric">
+                                <span class="metric-label">RMSE</span>
+                                <span class="metric-value">{{ pred.rmse }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Chart -->
+                <div class="result-chart-wrapper">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+
+                {% else %}
+                <div class="results-empty">
+                    <div class="empty-icon">🔮</div>
+                    <h3>No Predictions Yet</h3>
+                    <p>Fill in the features and click "Predict" to see results from all 3 models.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if result %}
+<script>
+    // Render prediction comparison chart
+    const ctx = document.getElementById('predictionChart').getContext('2d');
+    const predictions = {{ result.predictions | tojson }};
+    const bestModel = "{{ result.best_model }}";
+
+    const labels = Object.keys(predictions);
+    const values = labels.map(l => predictions[l].value);
+    const maes = labels.map(l => predictions[l].mae);
+
+    const colors = labels.map(l =>
+        l === bestModel
+            ? 'rgba(74, 222, 128, 0.85)'
+            : 'rgba(139, 92, 246, 0.6)'
+    );
+    const borderColors = labels.map(l =>
+        l === bestModel
+            ? 'rgba(74, 222, 128, 1)'
+            : 'rgba(139, 92, 246, 1)'
+    );
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Predicted Value',
+                data: values,
+                backgroundColor: colors,
+                borderColor: borderColors,
+                borderWidth: 2,
+                borderRadius: 8,
+                barPercentage: 0.6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Model Predictions Comparison',
+                    color: '#e2e8f0',
+                    font: { size: 16, family: 'Inter', weight: '600' }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#94a3b8', font: { family: 'Inter' } },
+                    grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#e2e8f0', font: { family: 'Inter', weight: '500' } },
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

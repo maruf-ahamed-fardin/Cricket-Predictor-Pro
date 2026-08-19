@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Model Comparison — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section compare-section">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-badge">📊 Analytics</span>
+            <h2 class="section-title">Model Comparison Dashboard</h2>
+            <p class="section-subtitle">Compare performance of all 3 models across formats and prediction targets.</p>
+        </div>
+
+        {% if metrics %}
+        <!-- Format Tabs -->
+        <div class="compare-tabs" id="compareTabs">
+            {% for key, cfg in formats.items() %}
+            <button class="compare-tab {% if loop.first %}compare-tab-active{% endif %}"
+                    data-format="{{ key }}"
+                    onclick="switchFormat('{{ key }}', this)">
+                {{ cfg.name }}
+            </button>
+            {% endfor %}
+        </div>
+
+        {% for fmt_key, fmt_targets in metrics.items() %}
+        <div class="compare-format-panel {% if loop.first %}panel-active{% endif %}"
+             id="panel-{{ fmt_key }}">
+
+            <h3 class="compare-format-title">
+                {% if fmt_key == 't10' %}⚡{% elif fmt_key == 't20' %}🔥{% elif fmt_key == 'odi' %}🏆{% else %}🏛️{% endif %}
+                {{ formats[fmt_key].name }} Format — Model Performance
+            </h3>
+
+            {% for target_key, model_results in fmt_targets.items() %}
+            <div class="compare-target-block">
+                <h4 class="compare-target-title">
+                    {{ targets[target_key].icon }} {{ targets[target_key].name }}
+                </h4>
+
+                <!-- Metrics Table -->
+                <div class="table-wrapper">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>MAE ↓</th>
+                                <th>R² ↑</th>
+                                <th>RMSE ↓</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set ns = namespace(best_mae=999) %}
+                            {% for model_name, m in model_results.items() %}
+                                {% if m.mae < ns.best_mae %}
+                                    {% set ns.best_mae = m.mae %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% for model_name, m in model_results.items() %}
+                            <tr class="{% if m.mae == ns.best_mae %}row-best{% endif %}">
+                                <td class="model-name-cell">
+                                    {% if m.mae == ns.best_mae %}🏆{% endif %}
+                                    {{ model_name }}
+                                </td>
+                                <td><code>{{ m.mae }}</code></td>
+                                <td><code>{{ m.r2 }}</code></td>
+                                <td><code>{{ m.rmse }}</code></td>
+                                <td>
+                                    <div class="perf-bar-wrapper">
+                                        <div class="perf-bar"
+                                             style="width: {{ [m.r2 * 100, 100] | min }}%;
+                                                    background: {% if m.mae == ns.best_mae %}linear-gradient(90deg, #4ade80, #22d3ee){% else %}linear-gradient(90deg, #8b5cf6, #a78bfa){% endif %}">
+                                        </div>
+                                        <span class="perf-label">{{ (m.r2 * 100) | round(1) }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Chart for this target -->
+                <div class="compare-chart-wrapper">
+                    <canvas id="chart-{{ fmt_key }}-{{ target_key }}" class="compare-chart"></canvas>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+
+        {% else %}
+        <div class="results-empty">
+            <div class="empty-icon">📊</div>
+            <h3>No Metrics Available</h3>
+            <p>Train the models first by running <code>python train_models.py</code></p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if metrics %}
+<script>
+    const allMetrics = {{ metrics | tojson }};
+    const chartInstances = {};
+
+    function renderCharts(fmtKey) {
+        const fmtData = allMetrics[fmtKey];
+        if (!fmtData) return;
+
+        for (const [targetKey, models] of Object.entries(fmtData)) {
+            const canvasId = `chart-${fmtKey}-${targetKey}`;
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) continue;
+
+            // Destroy previous chart
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+
+            const modelNames = Object.keys(models);
+            const maes = modelNames.map(m => models[m].mae);
+            const r2s = modelNames.map(m => models[m].r2);
+            const rmses = modelNames.map(m => models[m].rmse);
+
+            const bestIdx = maes.indexOf(Math.min(...maes));
+
+            chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: modelNames,
+                    datasets: [
+                        {
+                            label: 'MAE (lower = better)',
+                            data: maes,
+                            backgroundColor: modelNames.map((_, i) =>
+                                i === bestIdx ? 'rgba(74, 222, 128, 0.7)' : 'rgba(239, 68, 68, 0.5)'
+                            ),
+                            borderColor: modelNames.map((_, i) =>
+                                i === bestIdx ? '#4ade80' : '#ef4444'
+                            ),
+                            borderWidth: 2,
+                            borderRadius: 6,
+                        },
+                        {
+                            label: 'R² (higher = better)',
+                            data: r2s,
+                            backgroundColor: modelNames.map((_, i) =>
+                                i === bestIdx ? 'rgba(34, 211, 238, 0.7)' : 'rgba(139, 92, 246, 0.5)'
+                            ),
+                            borderColor: modelNames.map((_, i) =>
+                                i === bestIdx ? '#22d3ee' : '#8b5cf6'
+                            ),
+                            borderWidth: 2,
+                            borderRadius: 6,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter' }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8', font: { family: 'Inter' } },
+                            grid: { color: 'rgba(148, 163, 184, 0.08)' }
+                        },
+                        x: {
+                            ticks: { color: '#e2e8f0', font: { family: 'Inter', weight: '500', size: 11 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    function switchFormat(fmtKey, btn) {
+        // Toggle active tab
+        document.querySelectorAll('.compare-tab').forEach(t => t.classList.remove('compare-tab-active'));
+        btn.classList.add('compare-tab-active');
+
+        // Toggle panels
+        document.querySelectorAll('.compare-format-panel').forEach(p => p.classList.remove('panel-active'));
+        const panel = document.getElementById(`panel-${fmtKey}`);
+        if (panel) {
+            panel.classList.add('panel-active');
+            renderCharts(fmtKey);
+        }
+    }
+
+    // Render initial charts
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstFormat = Object.keys(allMetrics)[0];
+        if (firstFormat) renderCharts(firstFormat);
+    });
+</script>
+{% endif %}
+{% endblock %}

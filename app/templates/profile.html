@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section profile-section">
+    <div class="section-container">
+
+        <!-- Header -->
+        <div class="section-header" style="text-align:left; margin-bottom:32px;">
+            <span class="section-badge">👤 User Profile</span>
+            <h1 class="section-title" style="font-size:2rem;">My Cricket Profile</h1>
+            <p class="section-subtitle" style="margin:0; text-align:left;">Update your photo, name, and cricket preferences. Saved locally in your browser.</p>
+        </div>
+
+        <div class="profile-layout">
+
+            <!-- Left: Avatar Card -->
+            <div class="glass-card profile-avatar-card">
+                <!-- Avatar -->
+                <div class="avatar-wrapper" style="margin:0 auto 20px;">
+                    <img id="avatarPreview" class="avatar-img" src="" alt="Profile photo"
+                         style="display:none;" />
+                    <div class="avatar-placeholder" id="avatarPlaceholder">🏏</div>
+                    <button class="avatar-edit-btn" id="avatarEditBtn" title="Change photo">✏️</button>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+
+                <!-- Name & role display -->
+                <div class="profile-name" id="displayName">Cricket Fan</div>
+                <div class="profile-role" id="displayRole">Enthusiast · T20 Lover</div>
+
+                <!-- Favorite format badge -->
+                <div id="displayFormat" style="margin-bottom:16px;">
+                    <span class="section-badge" style="font-size:0.8rem;">⚡ Favourite: T20</span>
+                </div>
+
+                <!-- Mini stats -->
+                <div class="profile-stats-mini">
+                    <div class="stat-mini">
+                        <div class="stat-mini-value">72</div>
+                        <div class="stat-mini-label">Models</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-mini-value">4</div>
+                        <div class="stat-mini-label">Formats</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-mini-value">6</div>
+                        <div class="stat-mini-label">Targets</div>
+                    </div>
+                    <div class="stat-mini">
+                        <div class="stat-mini-value" id="displayPredictions">0</div>
+                        <div class="stat-mini-label">Predictions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Edit Form -->
+            <div class="glass-card profile-form-card">
+                <div class="card-header">
+                    <h2 class="card-title">✏️ Edit Profile</h2>
+                    <p class="card-subtitle">Changes are saved to your browser's local storage</p>
+                </div>
+
+                <!-- Personal Info -->
+                <div class="profile-form-section">
+                    <div class="profile-section-title">👤 Personal Info</div>
+                    <div class="profile-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="inputName">Full Name</label>
+                            <input class="form-input" type="text" id="inputName"
+                                   placeholder="e.g. Fardin Ahmed" maxlength="40">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputUsername">Username</label>
+                            <input class="form-input" type="text" id="inputUsername"
+                                   placeholder="e.g. fardin_cricket" maxlength="30">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputEmail">Email</label>
+                            <input class="form-input" type="email" id="inputEmail"
+                                   placeholder="e.g. fardin@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputCountry">Country</label>
+                            <select class="profile-select" id="inputCountry">
+                                <option value="">Select country</option>
+                                <option value="Bangladesh">🇧🇩 Bangladesh</option>
+                                <option value="India">🇮🇳 India</option>
+                                <option value="Pakistan">🇵🇰 Pakistan</option>
+                                <option value="Australia">🇦🇺 Australia</option>
+                                <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+                                <option value="South Africa">🇿🇦 South Africa</option>
+                                <option value="New Zealand">🇳🇿 New Zealand</option>
+                                <option value="West Indies">🏝️ West Indies</option>
+                                <option value="Sri Lanka">🇱🇰 Sri Lanka</option>
+                                <option value="Afghanistan">🇦🇫 Afghanistan</option>
+                                <option value="Other">🌍 Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group profile-grid-full">
+                            <label class="form-label" for="inputBio">Bio</label>
+                            <textarea class="profile-textarea" id="inputBio"
+                                      placeholder="Write a short bio about yourself as a cricket fan..."
+                                      maxlength="200"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cricket Preferences -->
+                <div class="profile-form-section">
+                    <div class="profile-section-title">🏏 Cricket Preferences</div>
+                    <div class="profile-grid">
+                        <div class="form-group">
+                            <label class="form-label">Favourite Format</label>
+                            <div class="badge-selector" id="fmtSelector">
+                                <span class="badge-option" data-val="T10">⚡ T10</span>
+                                <span class="badge-option selected" data-val="T20">🔥 T20</span>
+                                <span class="badge-option" data-val="ODI">🏆 ODI</span>
+                                <span class="badge-option" data-val="Test">🏛️ Test</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputRole">Preferred Role</label>
+                            <select class="profile-select" id="inputRole">
+                                <option value="Enthusiast">🎯 Enthusiast</option>
+                                <option value="Batsman">🏏 Batsman</option>
+                                <option value="Bowler">🎳 Bowler</option>
+                                <option value="All-rounder">⚡ All-rounder</option>
+                                <option value="Analyst">📊 Analyst</option>
+                                <option value="Coach">🧢 Coach</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputTeam">Favourite Team</label>
+                            <input class="form-input" type="text" id="inputTeam"
+                                   placeholder="e.g. Bangladesh Tigers" maxlength="40">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="inputPlayer">Favourite Player</label>
+                            <input class="form-input" type="text" id="inputPlayer"
+                                   placeholder="e.g. Shakib Al Hasan" maxlength="40">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+                    <button class="btn btn-primary btn-lg" id="saveProfileBtn">
+                        💾 Save Profile
+                    </button>
+                    <button class="btn btn-outline" id="resetProfileBtn">
+                        🗑️ Reset
+                    </button>
+                </div>
+
+                <!-- Save Banner -->
+                <div class="save-banner" id="saveBanner">
+                    ✅ Profile saved successfully!
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ─── Profile Manager ──────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'cricket_predictor_profile';
+
+function loadProfile() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch { return {}; }
+}
+
+function saveProfile(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function updateDisplayCard(data) {
+    const nameEl = document.getElementById('displayName');
+    const roleEl = document.getElementById('displayRole');
+    const fmtEl = document.getElementById('displayFormat');
+    const predEl = document.getElementById('displayPredictions');
+
+    nameEl.textContent = data.name || 'Cricket Fan';
+    const role = data.role || 'Enthusiast';
+    const country = data.country ? ` · ${data.country}` : '';
+    roleEl.textContent = `${role}${country}`;
+
+    const fmt = data.favFormat || 'T20';
+    const fmtEmoji = {T10:'⚡', T20:'🔥', ODI:'🏆', Test:'🏛️'}[fmt] || '🏏';
+    fmtEl.innerHTML = `<span class="section-badge" style="font-size:0.8rem;">${fmtEmoji} Favourite: ${fmt}</span>`;
+    predEl.textContent = data.predictions || '0';
+}
+
+function populateForm(data) {
+    document.getElementById('inputName').value = data.name || '';
+    document.getElementById('inputUsername').value = data.username || '';
+    document.getElementById('inputEmail').value = data.email || '';
+    document.getElementById('inputBio').value = data.bio || '';
+    document.getElementById('inputCountry').value = data.country || '';
+    document.getElementById('inputRole').value = data.role || 'Enthusiast';
+    document.getElementById('inputTeam').value = data.team || '';
+    document.getElementById('inputPlayer').value = data.player || '';
+
+    // Format badges
+    const fav = data.favFormat || 'T20';
+    document.querySelectorAll('#fmtSelector .badge-option').forEach(b => {
+        b.classList.toggle('selected', b.dataset.val === fav);
+    });
+
+    // Avatar
+    if (data.avatar) {
+        document.getElementById('avatarPreview').src = data.avatar;
+        document.getElementById('avatarPreview').style.display = 'block';
+        document.getElementById('avatarPlaceholder').style.display = 'none';
+    }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    const profile = loadProfile();
+    populateForm(profile);
+    updateDisplayCard(profile);
+
+    // Format badge toggle
+    document.querySelectorAll('#fmtSelector .badge-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#fmtSelector .badge-option').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        });
+    });
+
+    // Avatar upload
+    document.getElementById('avatarEditBtn').addEventListener('click', () => {
+        document.getElementById('avatarInput').click();
+    });
+
+    document.getElementById('avatarInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const src = ev.target.result;
+            document.getElementById('avatarPreview').src = src;
+            document.getElementById('avatarPreview').style.display = 'block';
+            document.getElementById('avatarPlaceholder').style.display = 'none';
+            // Save immediately
+            const cur = loadProfile();
+            cur.avatar = src;
+            saveProfile(cur);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Save
+    document.getElementById('saveProfileBtn').addEventListener('click', () => {
+        const cur = loadProfile();
+        const favFormat = document.querySelector('#fmtSelector .badge-option.selected')?.dataset.val || 'T20';
+
+        const data = {
+            ...cur,
+            name: document.getElementById('inputName').value.trim() || 'Cricket Fan',
+            username: document.getElementById('inputUsername').value.trim(),
+            email: document.getElementById('inputEmail').value.trim(),
+            bio: document.getElementById('inputBio').value.trim(),
+            country: document.getElementById('inputCountry').value,
+            role: document.getElementById('inputRole').value,
+            team: document.getElementById('inputTeam').value.trim(),
+            player: document.getElementById('inputPlayer').value.trim(),
+            favFormat,
+        };
+
+        saveProfile(data);
+        updateDisplayCard(data);
+
+        // Show banner
+        const banner = document.getElementById('saveBanner');
+        banner.classList.add('visible');
+        setTimeout(() => banner.classList.remove('visible'), 3000);
+    });
+
+    // Reset
+    document.getElementById('resetProfileBtn').addEventListener('click', () => {
+        if (!confirm('Reset all profile data?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+    });
+});
+</script>
+{% endblock %}

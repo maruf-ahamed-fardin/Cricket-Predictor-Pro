@@ -1,0 +1,490 @@
+{
+  "t10": {
+    "runs_in_over": {
+      "Linear Regression": {
+        "mae": 3.039,
+        "r2": 0.2663,
+        "rmse": 3.774,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\runs_in_over__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 2.928,
+        "r2": 0.3149,
+        "rmse": 3.647,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\runs_in_over__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 2.859,
+        "r2": 0.3478,
+        "rmse": 3.558,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\runs_in_over__polynomial_regression.joblib"
+      }
+    },
+    "total_innings_runs": {
+      "Linear Regression": {
+        "mae": 9.668,
+        "r2": 0.6307,
+        "rmse": 12.077,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\total_innings_runs__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 10.047,
+        "r2": 0.6013,
+        "rmse": 12.548,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\total_innings_runs__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 9.744,
+        "r2": 0.6278,
+        "rmse": 12.125,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\total_innings_runs__polynomial_regression.joblib"
+      }
+    },
+    "batting_avg": {
+      "Linear Regression": {
+        "mae": 5.453,
+        "r2": 0.5713,
+        "rmse": 7.269,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\batting_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 2.857,
+        "r2": 0.8927,
+        "rmse": 3.636,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\batting_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.002,
+        "r2": 0.7882,
+        "rmse": 5.11,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\batting_avg__polynomial_regression.joblib"
+      }
+    },
+    "bowling_avg": {
+      "Linear Regression": {
+        "mae": 4.8,
+        "r2": 0.037,
+        "rmse": 5.984,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\bowling_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 5.037,
+        "r2": -0.0452,
+        "rmse": 6.234,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\bowling_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.798,
+        "r2": 0.0375,
+        "rmse": 5.982,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\bowling_avg__polynomial_regression.joblib"
+      }
+    },
+    "total_run_avg": {
+      "Linear Regression": {
+        "mae": 1.243,
+        "r2": 0.3112,
+        "rmse": 1.551,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\total_run_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 1.293,
+        "r2": 0.268,
+        "rmse": 1.599,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\total_run_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 1.236,
+        "r2": 0.3139,
+        "rmse": 1.548,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\total_run_avg__polynomial_regression.joblib"
+      }
+    },
+    "overs_batted": {
+      "Linear Regression": {
+        "mae": 1.151,
+        "r2": -0.0193,
+        "rmse": 1.427,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\overs_batted__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 1.184,
+        "r2": -0.0832,
+        "rmse": 1.471,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\overs_batted__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 1.157,
+        "r2": -0.0251,
+        "rmse": 1.431,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t10\\overs_batted__polynomial_regression.joblib"
+      }
+    }
+  },
+  "t20": {
+    "runs_in_over": {
+      "Linear Regression": {
+        "mae": 2.638,
+        "r2": 0.3088,
+        "rmse": 3.334,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\runs_in_over__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 2.489,
+        "r2": 0.3761,
+        "rmse": 3.168,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\runs_in_over__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 2.441,
+        "r2": 0.394,
+        "rmse": 3.122,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\runs_in_over__polynomial_regression.joblib"
+      }
+    },
+    "total_innings_runs": {
+      "Linear Regression": {
+        "mae": 9.755,
+        "r2": 0.8134,
+        "rmse": 12.096,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\total_innings_runs__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 10.078,
+        "r2": 0.8014,
+        "rmse": 12.478,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\total_innings_runs__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 9.826,
+        "r2": 0.81,
+        "rmse": 12.206,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\total_innings_runs__polynomial_regression.joblib"
+      }
+    },
+    "batting_avg": {
+      "Linear Regression": {
+        "mae": 6.572,
+        "r2": 0.7017,
+        "rmse": 8.707,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\batting_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 3.029,
+        "r2": 0.9406,
+        "rmse": 3.886,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\batting_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.231,
+        "r2": 0.8849,
+        "rmse": 5.408,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\batting_avg__polynomial_regression.joblib"
+      }
+    },
+    "bowling_avg": {
+      "Linear Regression": {
+        "mae": 4.842,
+        "r2": 0.0332,
+        "rmse": 6.003,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\bowling_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 4.998,
+        "r2": -0.0342,
+        "rmse": 6.209,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\bowling_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.858,
+        "r2": 0.0266,
+        "rmse": 6.024,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\bowling_avg__polynomial_regression.joblib"
+      }
+    },
+    "total_run_avg": {
+      "Linear Regression": {
+        "mae": 0.624,
+        "r2": 0.3994,
+        "rmse": 0.79,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\total_run_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 0.634,
+        "r2": 0.3795,
+        "rmse": 0.803,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\total_run_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 0.619,
+        "r2": 0.4049,
+        "rmse": 0.786,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\total_run_avg__polynomial_regression.joblib"
+      }
+    },
+    "overs_batted": {
+      "Linear Regression": {
+        "mae": 2.265,
+        "r2": -0.0017,
+        "rmse": 2.717,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\overs_batted__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 2.248,
+        "r2": -0.0144,
+        "rmse": 2.734,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\overs_batted__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 2.267,
+        "r2": -0.0094,
+        "rmse": 2.727,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\t20\\overs_batted__polynomial_regression.joblib"
+      }
+    }
+  },
+  "odi": {
+    "runs_in_over": {
+      "Linear Regression": {
+        "mae": 2.076,
+        "r2": 0.3493,
+        "rmse": 2.649,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\runs_in_over__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 1.952,
+        "r2": 0.4243,
+        "rmse": 2.492,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\runs_in_over__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 1.909,
+        "r2": 0.4451,
+        "rmse": 2.446,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\runs_in_over__polynomial_regression.joblib"
+      }
+    },
+    "total_innings_runs": {
+      "Linear Regression": {
+        "mae": 9.743,
+        "r2": 0.9154,
+        "rmse": 12.079,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\total_innings_runs__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 9.989,
+        "r2": 0.9092,
+        "rmse": 12.52,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\total_innings_runs__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 9.798,
+        "r2": 0.9143,
+        "rmse": 12.163,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\total_innings_runs__polynomial_regression.joblib"
+      }
+    },
+    "batting_avg": {
+      "Linear Regression": {
+        "mae": 5.464,
+        "r2": 0.8466,
+        "rmse": 6.805,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\batting_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 2.782,
+        "r2": 0.9544,
+        "rmse": 3.71,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\batting_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.049,
+        "r2": 0.9094,
+        "rmse": 5.229,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\batting_avg__polynomial_regression.joblib"
+      }
+    },
+    "bowling_avg": {
+      "Linear Regression": {
+        "mae": 4.871,
+        "r2": 0.0387,
+        "rmse": 6.077,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\bowling_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 5.038,
+        "r2": -0.0355,
+        "rmse": 6.307,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\bowling_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.884,
+        "r2": 0.0323,
+        "rmse": 6.097,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\bowling_avg__polynomial_regression.joblib"
+      }
+    },
+    "total_run_avg": {
+      "Linear Regression": {
+        "mae": 0.245,
+        "r2": 0.4009,
+        "rmse": 0.309,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\total_run_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 0.248,
+        "r2": 0.3805,
+        "rmse": 0.314,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\total_run_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 0.243,
+        "r2": 0.4047,
+        "rmse": 0.308,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\total_run_avg__polynomial_regression.joblib"
+      }
+    },
+    "overs_batted": {
+      "Linear Regression": {
+        "mae": 5.519,
+        "r2": -0.0019,
+        "rmse": 6.618,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\overs_batted__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 5.514,
+        "r2": -0.0262,
+        "rmse": 6.698,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\overs_batted__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 5.551,
+        "r2": -0.0182,
+        "rmse": 6.672,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\odi\\overs_batted__polynomial_regression.joblib"
+      }
+    }
+  },
+  "test": {
+    "runs_in_over": {
+      "Linear Regression": {
+        "mae": 1.429,
+        "r2": 0.4312,
+        "rmse": 1.906,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\runs_in_over__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 1.406,
+        "r2": 0.4369,
+        "rmse": 1.896,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\runs_in_over__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 1.39,
+        "r2": 0.4552,
+        "rmse": 1.865,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\runs_in_over__polynomial_regression.joblib"
+      }
+    },
+    "total_innings_runs": {
+      "Linear Regression": {
+        "mae": 9.758,
+        "r2": 0.913,
+        "rmse": 12.086,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\total_innings_runs__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 10.092,
+        "r2": 0.9059,
+        "rmse": 12.572,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\total_innings_runs__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 9.836,
+        "r2": 0.9118,
+        "rmse": 12.172,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\total_innings_runs__polynomial_regression.joblib"
+      }
+    },
+    "batting_avg": {
+      "Linear Regression": {
+        "mae": 5.293,
+        "r2": 0.8493,
+        "rmse": 6.589,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\batting_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 2.754,
+        "r2": 0.9527,
+        "rmse": 3.692,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\batting_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.03,
+        "r2": 0.9067,
+        "rmse": 5.183,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\batting_avg__polynomial_regression.joblib"
+      }
+    },
+    "bowling_avg": {
+      "Linear Regression": {
+        "mae": 4.874,
+        "r2": 0.0386,
+        "rmse": 6.087,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\bowling_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 5.062,
+        "r2": -0.0394,
+        "rmse": 6.33,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\bowling_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 4.877,
+        "r2": 0.0368,
+        "rmse": 6.093,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\bowling_avg__polynomial_regression.joblib"
+      }
+    },
+    "total_run_avg": {
+      "Linear Regression": {
+        "mae": 0.136,
+        "r2": 0.3915,
+        "rmse": 0.171,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\total_run_avg__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 0.138,
+        "r2": 0.3695,
+        "rmse": 0.174,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\total_run_avg__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 0.135,
+        "r2": 0.3961,
+        "rmse": 0.17,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\total_run_avg__polynomial_regression.joblib"
+      }
+    },
+    "overs_batted": {
+      "Linear Regression": {
+        "mae": 9.877,
+        "r2": -0.0026,
+        "rmse": 11.836,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\overs_batted__linear_regression.joblib"
+      },
+      "Gradient Boosting": {
+        "mae": 9.894,
+        "r2": -0.0156,
+        "rmse": 11.913,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\overs_batted__gradient_boosting.joblib"
+      },
+      "Polynomial Regression": {
+        "mae": 9.934,
+        "r2": -0.0142,
+        "rmse": 11.904,
+        "model_path": "C:\\Users\\Fardin\\Desktop\\model\\models\\test\\overs_batted__polynomial_regression.joblib"
+      }
+    }
+  }
+}
