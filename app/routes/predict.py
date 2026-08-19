@@ -4,12 +4,14 @@ Cricket Predictor Pro — Routes
 All web and API routes for prediction, comparison, and landing pages.
 """
 
+import os
 from flask import (
     Blueprint,
     render_template,
     request,
     jsonify,
     current_app,
+    send_from_directory,
 )
 
 from app.services.data_generator import FORMAT_CONFIG
@@ -24,6 +26,17 @@ def get_predictor():
 
 
 # ─── Web Routes ──────────────────────────────────────────────────────────────
+
+
+@predict_bp.route("/favicon.ico")
+def favicon():
+    """Serve official logo as the site favicon."""
+    static_dir = os.path.join(current_app.root_path, "static")
+    return send_from_directory(
+        static_dir,
+        "favicon.svg",
+        mimetype="image/svg+xml",
+    )
 
 
 @predict_bp.route("/")
@@ -44,6 +57,7 @@ def profile():
         formats=FORMAT_CONFIG,
         targets=PREDICTION_TARGETS,
     )
+
 
 
 @predict_bp.route("/predict/<fmt>")
