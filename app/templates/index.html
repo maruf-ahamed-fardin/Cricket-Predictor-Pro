@@ -3,8 +3,16 @@
 {% block title %}Cricket Predictor Pro — AI Cricket Predictions{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
+<!-- Hero Section with Cinematic Background Video -->
 <section class="hero" id="hero">
+    <!-- Video Background -->
+    <div class="hero-video-wrapper">
+        <video class="hero-video" autoplay muted loop playsinline poster="{{ url_for('static', filename='img/hero_poster.jpg') }}">
+            <source src="{{ url_for('static', filename='videos/hero_cricket.mp4') }}" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay"></div>
+    </div>
+
     <div class="hero-bg-shapes">
         <div class="shape shape-1"></div>
         <div class="shape shape-2"></div>
