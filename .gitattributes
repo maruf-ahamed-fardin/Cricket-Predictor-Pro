@@ -1,0 +1,20 @@
+# GitHub Linguist Language Override
+# Ensures Python is shown as the primary language for this repository
+
+# Mark templates and static assets as vendored/ignored in language statistics
+app/templates/** linguist-vendored
+app/static/** linguist-vendored
+data/** linguist-vendored
+models/** linguist-vendored
+
+# Ignore documentation, notebooks, and config in language breakdown
+*.ipynb linguist-vendored
+*.html linguist-detectable=false
+*.css linguist-detectable=false
+*.js linguist-detectable=false
+*.svg linguist-detectable=false
+*.json linguist-detectable=false
+*.csv linguist-detectable=false
+
+# Explicitly prioritize Python
+*.py linguist-detectable=true
