@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} {{ title }} — Cricket Predictor Pro{% endblock %}
+{% block content %}
+<section class="section" style="min-height:60vh; display:flex; align-items:center;">
+    <div class="section-container" style="text-align:center;">
+        <div style="font-size:5rem; margin-bottom:16px;">{{ emoji }}</div>
+        <h1 style="font-size:5rem; font-weight:900; background:var(--gradient-primary);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text; margin-bottom:8px;">{{ code }}</h1>
+        <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:12px;">{{ title }}</h2>
+        <p style="color:var(--text-secondary); margin-bottom:32px;">{{ message }}</p>
+        <a href="/" class="btn btn-primary btn-lg">🏠 Back to Home</a>
+    </div>
+</section>
+{% endblock %}

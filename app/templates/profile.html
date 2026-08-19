@@ -1,41 +1,38 @@
 {% extends "base.html" %}
-
 {% block title %}My Profile — Cricket Predictor Pro{% endblock %}
 
 {% block content %}
 <section class="section profile-section">
     <div class="section-container">
 
-        <!-- Header -->
         <div class="section-header" style="text-align:left; margin-bottom:32px;">
             <span class="section-badge">👤 User Profile</span>
             <h1 class="section-title" style="font-size:2rem;">My Cricket Profile</h1>
-            <p class="section-subtitle" style="margin:0; text-align:left;">Update your photo, name, and cricket preferences. Saved locally in your browser.</p>
+            <p class="section-subtitle" style="margin:0; text-align:left;">
+                Personalise your avatar, name, and cricket preferences. Saved in your browser.
+            </p>
         </div>
 
         <div class="profile-layout">
 
-            <!-- Left: Avatar Card -->
+            <!-- ── Left: Avatar Card ─────────────────────────────────────── -->
             <div class="glass-card profile-avatar-card">
-                <!-- Avatar -->
+
+                <!-- Current Avatar -->
                 <div class="avatar-wrapper" style="margin:0 auto 20px;">
-                    <img id="avatarPreview" class="avatar-img" src="" alt="Profile photo"
-                         style="display:none;" />
+                    <img id="avatarPreview" class="avatar-img" src="" alt="Profile photo" style="display:none;">
                     <div class="avatar-placeholder" id="avatarPlaceholder">🏏</div>
-                    <button class="avatar-edit-btn" id="avatarEditBtn" title="Change photo">✏️</button>
+                    <button class="avatar-edit-btn" id="avatarEditBtn" title="Upload your own photo">📷</button>
                 </div>
                 <input type="file" id="avatarInput" accept="image/*" style="display:none;">
 
-                <!-- Name & role display -->
                 <div class="profile-name" id="displayName">Cricket Fan</div>
-                <div class="profile-role" id="displayRole">Enthusiast · T20 Lover</div>
-
-                <!-- Favorite format badge -->
+                <div class="profile-role" id="displayRole">Enthusiast</div>
                 <div id="displayFormat" style="margin-bottom:16px;">
-                    <span class="section-badge" style="font-size:0.8rem;">⚡ Favourite: T20</span>
+                    <span class="section-badge" style="font-size:0.78rem;">🔥 Favourite: T20</span>
                 </div>
 
-                <!-- Mini stats -->
+                <!-- Mini Stats -->
                 <div class="profile-stats-mini">
                     <div class="stat-mini">
                         <div class="stat-mini-value">72</div>
@@ -51,16 +48,52 @@
                     </div>
                     <div class="stat-mini">
                         <div class="stat-mini-value" id="displayPredictions">0</div>
-                        <div class="stat-mini-label">Predictions</div>
+                        <div class="stat-mini-label">Runs Predicted</div>
                     </div>
+                </div>
+
+                <!-- Default Avatar Picker -->
+                <div class="avatar-picker-section">
+                    <div class="profile-section-title" style="justify-content:center; margin-bottom:14px;">
+                        🎭 Choose Avatar
+                    </div>
+                    <div class="default-avatars-grid" id="defaultAvatarsGrid">
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_batsman.jpg" data-label="Batsman">
+                            <img src="/static/avatars/avatar_batsman.jpg" alt="Batsman" loading="lazy">
+                            <span>🏏 Batsman</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_bowler.jpg" data-label="Bowler">
+                            <img src="/static/avatars/avatar_bowler.jpg" alt="Bowler" loading="lazy">
+                            <span>🎳 Bowler</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_keeper.jpg" data-label="Keeper">
+                            <img src="/static/avatars/avatar_keeper.jpg" alt="Keeper" loading="lazy">
+                            <span>🧤 Keeper</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_allrounder.jpg" data-label="All-rounder">
+                            <img src="/static/avatars/avatar_allrounder.jpg" alt="All-rounder" loading="lazy">
+                            <span>⚡ All-rounder</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_umpire.jpg" data-label="Umpire">
+                            <img src="/static/avatars/avatar_umpire.jpg" alt="Umpire" loading="lazy">
+                            <span>🙋 Umpire</span>
+                        </div>
+                        <div class="default-avatar-item" data-src="/static/avatars/avatar_coach.jpg" data-label="Coach">
+                            <img src="/static/avatars/avatar_coach.jpg" alt="Coach" loading="lazy">
+                            <span>📊 Analyst</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.78rem; color:var(--text-muted); text-align:center; margin-top:8px;">
+                        Click to select · or upload your own photo ↑
+                    </p>
                 </div>
             </div>
 
-            <!-- Right: Edit Form -->
+            <!-- ── Right: Edit Form ──────────────────────────────────────── -->
             <div class="glass-card profile-form-card">
                 <div class="card-header">
                     <h2 class="card-title">✏️ Edit Profile</h2>
-                    <p class="card-subtitle">Changes are saved to your browser's local storage</p>
+                    <p class="card-subtitle">Changes save to your browser's local storage</p>
                 </div>
 
                 <!-- Personal Info -->
@@ -80,7 +113,7 @@
                         <div class="form-group">
                             <label class="form-label" for="inputEmail">Email</label>
                             <input class="form-input" type="email" id="inputEmail"
-                                   placeholder="e.g. fardin@example.com">
+                                   placeholder="e.g. fardin@email.com">
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="inputCountry">Country</label>
@@ -93,8 +126,8 @@
                                 <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
                                 <option value="South Africa">🇿🇦 South Africa</option>
                                 <option value="New Zealand">🇳🇿 New Zealand</option>
-                                <option value="West Indies">🏝️ West Indies</option>
                                 <option value="Sri Lanka">🇱🇰 Sri Lanka</option>
+                                <option value="West Indies">🏝️ West Indies</option>
                                 <option value="Afghanistan">🇦🇫 Afghanistan</option>
                                 <option value="Other">🌍 Other</option>
                             </select>
@@ -102,7 +135,7 @@
                         <div class="form-group profile-grid-full">
                             <label class="form-label" for="inputBio">Bio</label>
                             <textarea class="profile-textarea" id="inputBio"
-                                      placeholder="Write a short bio about yourself as a cricket fan..."
+                                      placeholder="Write something about yourself as a cricket fan..."
                                       maxlength="200"></textarea>
                         </div>
                     </div>
@@ -130,6 +163,7 @@
                                 <option value="All-rounder">⚡ All-rounder</option>
                                 <option value="Analyst">📊 Analyst</option>
                                 <option value="Coach">🧢 Coach</option>
+                                <option value="Umpire">🙋 Umpire</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -145,20 +179,17 @@
                     </div>
                 </div>
 
-                <!-- Save Button -->
+                <!-- Actions -->
                 <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
                     <button class="btn btn-primary btn-lg" id="saveProfileBtn">
                         💾 Save Profile
                     </button>
-                    <button class="btn btn-outline" id="resetProfileBtn">
-                        🗑️ Reset
+                    <button class="btn btn-outline" id="resetProfileBtn" style="color:var(--accent-red); border-color:rgba(239,68,68,0.3);">
+                        🗑️ Reset All
                     </button>
                 </div>
 
-                <!-- Save Banner -->
-                <div class="save-banner" id="saveBanner">
-                    ✅ Profile saved successfully!
-                </div>
+                <div class="save-banner" id="saveBanner">✅ Profile saved successfully!</div>
             </div>
         </div>
     </div>
@@ -168,65 +199,93 @@
 {% block scripts %}
 <script>
 // ─── Profile Manager ──────────────────────────────────────────────────────
-
 const STORAGE_KEY = 'cricket_predictor_profile';
+const fmtEmojis = {T10:'⚡', T20:'🔥', ODI:'🏆', Test:'🏛️'};
 
 function loadProfile() {
-    try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
 }
+function saveProfile(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
-function saveProfile(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+function setAvatar(src) {
+    const prev = document.getElementById('avatarPreview');
+    const ph   = document.getElementById('avatarPlaceholder');
+    if (src) {
+        prev.src = src; prev.style.display = 'block'; ph.style.display = 'none';
+    } else {
+        prev.style.display = 'none'; ph.style.display = 'flex';
+    }
+    // Mark selected in grid
+    document.querySelectorAll('.default-avatar-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.src === src);
+    });
 }
 
 function updateDisplayCard(data) {
-    const nameEl = document.getElementById('displayName');
-    const roleEl = document.getElementById('displayRole');
-    const fmtEl = document.getElementById('displayFormat');
-    const predEl = document.getElementById('displayPredictions');
-
-    nameEl.textContent = data.name || 'Cricket Fan';
-    const role = data.role || 'Enthusiast';
+    document.getElementById('displayName').textContent = data.name || 'Cricket Fan';
     const country = data.country ? ` · ${data.country}` : '';
-    roleEl.textContent = `${role}${country}`;
-
+    document.getElementById('displayRole').textContent = `${data.role || 'Enthusiast'}${country}`;
     const fmt = data.favFormat || 'T20';
-    const fmtEmoji = {T10:'⚡', T20:'🔥', ODI:'🏆', Test:'🏛️'}[fmt] || '🏏';
-    fmtEl.innerHTML = `<span class="section-badge" style="font-size:0.8rem;">${fmtEmoji} Favourite: ${fmt}</span>`;
-    predEl.textContent = data.predictions || '0';
+    document.getElementById('displayFormat').innerHTML =
+        `<span class="section-badge" style="font-size:0.78rem;">${fmtEmojis[fmt]||'🏏'} Favourite: ${fmt}</span>`;
+    document.getElementById('displayPredictions').textContent = data.predictions || '0';
+    setAvatar(data.avatar || '');
 }
 
 function populateForm(data) {
-    document.getElementById('inputName').value = data.name || '';
+    document.getElementById('inputName').value     = data.name     || '';
     document.getElementById('inputUsername').value = data.username || '';
-    document.getElementById('inputEmail').value = data.email || '';
-    document.getElementById('inputBio').value = data.bio || '';
-    document.getElementById('inputCountry').value = data.country || '';
-    document.getElementById('inputRole').value = data.role || 'Enthusiast';
-    document.getElementById('inputTeam').value = data.team || '';
-    document.getElementById('inputPlayer').value = data.player || '';
+    document.getElementById('inputEmail').value    = data.email    || '';
+    document.getElementById('inputBio').value      = data.bio      || '';
+    document.getElementById('inputCountry').value  = data.country  || '';
+    document.getElementById('inputRole').value     = data.role     || 'Enthusiast';
+    document.getElementById('inputTeam').value     = data.team     || '';
+    document.getElementById('inputPlayer').value   = data.player   || '';
 
-    // Format badges
     const fav = data.favFormat || 'T20';
     document.querySelectorAll('#fmtSelector .badge-option').forEach(b => {
         b.classList.toggle('selected', b.dataset.val === fav);
     });
-
-    // Avatar
-    if (data.avatar) {
-        document.getElementById('avatarPreview').src = data.avatar;
-        document.getElementById('avatarPreview').style.display = 'block';
-        document.getElementById('avatarPlaceholder').style.display = 'none';
-    }
+    setAvatar(data.avatar || '');
 }
 
-// Init
 document.addEventListener('DOMContentLoaded', () => {
     const profile = loadProfile();
     populateForm(profile);
     updateDisplayCard(profile);
+
+    // Default avatar grid clicks
+    document.querySelectorAll('.default-avatar-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const src = item.dataset.src;
+            const cur = loadProfile();
+            cur.avatar = src;
+            saveProfile(cur);
+            setAvatar(src);
+            // Update navbar avatar immediately
+            if (window.updateNavbarAvatar) window.updateNavbarAvatar(src);
+        });
+    });
+
+    // Upload own photo
+    document.getElementById('avatarEditBtn').addEventListener('click', () => {
+        document.getElementById('avatarInput').click();
+    });
+    document.getElementById('avatarInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const src = ev.target.result;
+            const cur = loadProfile();
+            cur.avatar = src;
+            saveProfile(cur);
+            setAvatar(src);
+            if (window.updateNavbarAvatar) window.updateNavbarAvatar(src);
+        };
+        reader.readAsDataURL(file);
+    });
 
     // Format badge toggle
     document.querySelectorAll('#fmtSelector .badge-option').forEach(btn => {
@@ -236,33 +295,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Avatar upload
-    document.getElementById('avatarEditBtn').addEventListener('click', () => {
-        document.getElementById('avatarInput').click();
-    });
-
-    document.getElementById('avatarInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            const src = ev.target.result;
-            document.getElementById('avatarPreview').src = src;
-            document.getElementById('avatarPreview').style.display = 'block';
-            document.getElementById('avatarPlaceholder').style.display = 'none';
-            // Save immediately
-            const cur = loadProfile();
-            cur.avatar = src;
-            saveProfile(cur);
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // Save
+    // Save profile
     document.getElementById('saveProfileBtn').addEventListener('click', () => {
         const cur = loadProfile();
         const favFormat = document.querySelector('#fmtSelector .badge-option.selected')?.dataset.val || 'T20';
-
         const data = {
             ...cur,
             name: document.getElementById('inputName').value.trim() || 'Cricket Fan',
@@ -275,19 +311,17 @@ document.addEventListener('DOMContentLoaded', () => {
             player: document.getElementById('inputPlayer').value.trim(),
             favFormat,
         };
-
         saveProfile(data);
         updateDisplayCard(data);
-
-        // Show banner
+        if (window.updateNavbarAvatar) window.updateNavbarAvatar(data.avatar);
         const banner = document.getElementById('saveBanner');
         banner.classList.add('visible');
-        setTimeout(() => banner.classList.remove('visible'), 3000);
+        setTimeout(() => banner.classList.remove('visible'), 3500);
     });
 
     // Reset
     document.getElementById('resetProfileBtn').addEventListener('click', () => {
-        if (!confirm('Reset all profile data?')) return;
+        if (!confirm('Reset all profile data? This cannot be undone.')) return;
         localStorage.removeItem(STORAGE_KEY);
         location.reload();
     });

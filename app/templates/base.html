@@ -16,6 +16,14 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Theme: apply immediately before render to avoid flash -->
+    <script>
+        (function() {
+            const t = localStorage.getItem('cpp_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
     <!-- Navigation -->
@@ -26,11 +34,20 @@
                 <span class="brand-text">Cricket Predictor <span class="brand-pro">Pro</span></span>
             </a>
 
-            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                <span class="toggle-bar"></span>
-                <span class="toggle-bar"></span>
-                <span class="toggle-bar"></span>
-            </button>
+            <div class="nav-right">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+                    <span class="theme-icon theme-icon-dark">🌙</span>
+                    <span class="theme-icon theme-icon-light">☀️</span>
+                </button>
+
+                <!-- Hamburger -->
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                    <span class="toggle-bar"></span>
+                    <span class="toggle-bar"></span>
+                    <span class="toggle-bar"></span>
+                </button>
+            </div>
 
             <ul class="nav-links" id="navLinks">
                 <li><a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
@@ -42,8 +59,17 @@
                         {% endfor %}
                     </ul>
                 </li>
-                <li><a href="/compare" class="nav-link {% if request.path == '/compare' %}active{% endif %}">Compare Models</a></li>
-                <li><a href="/profile" class="nav-link {% if request.path == '/profile' %}active{% endif %}">👤 Profile</a></li>
+                <li><a href="/compare" class="nav-link {% if request.path == '/compare' %}active{% endif %}">Compare</a></li>
+                <!-- Profile link with avatar -->
+                <li>
+                    <a href="/profile" class="nav-link nav-profile-link {% if request.path == '/profile' %}active{% endif %}" id="navProfileLink">
+                        <span class="nav-avatar-wrap" id="navAvatarWrap">
+                            <img id="navAvatarImg" class="nav-avatar-img" src="" alt="Profile" style="display:none;">
+                            <span class="nav-avatar-placeholder" id="navAvatarPlaceholder">👤</span>
+                        </span>
+                        <span class="nav-profile-name" id="navProfileName">Profile</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
@@ -61,15 +87,22 @@
                 <span>Cricket Predictor Pro</span>
             </div>
             <p class="footer-text">
-                AI-powered cricket prediction using Linear Regression, Gradient Boosting & Polynomial Regression
+                AI-powered cricket prediction · Linear Regression · Gradient Boosting · Polynomial Regression
             </p>
             <div class="footer-links">
                 <a href="/">Home</a>
                 <span class="footer-divider">•</span>
                 <a href="/compare">Compare</a>
                 <span class="footer-divider">•</span>
+                <a href="/profile">Profile</a>
+                <span class="footer-divider">•</span>
                 <a href="/api/formats">API</a>
+                <span class="footer-divider">•</span>
+                <a href="/health">Health</a>
             </div>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:12px;">
+                Production build · 72 trained models · Flask + scikit-learn
+            </p>
         </div>
     </footer>
 

@@ -3,3 +3,5 @@ scikit-learn>=1.4
 pandas>=2.1
 numpy>=1.26
 joblib>=1.3
+gunicorn>=21.2
+python-dotenv>=1.0
