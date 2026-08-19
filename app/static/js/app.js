@@ -5,6 +5,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
+    initThemeToggle();
+    initNavbarAvatar();
     initTargetSlider();
     initFormHandling();
     initScrollAnimations();
@@ -54,6 +56,50 @@ function initNavigation() {
         }, { passive: true });
     }
 }
+
+
+/* ─── Theme Toggle (Dark / Light) ────────────────────────────────────────── */
+
+function initThemeToggle() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('cpp_theme', next);
+    });
+}
+
+
+/* ─── Navbar Avatar (synced from localStorage profile) ───────────────────── */
+
+function initNavbarAvatar() {
+    try {
+        const profile = JSON.parse(localStorage.getItem('cricket_predictor_profile')) || {};
+        updateNavbarAvatar(profile.avatar || '', profile.name || '');
+    } catch { /* no profile yet */ }
+}
+
+// Exported to window so profile page can call it after save
+window.updateNavbarAvatar = function(avatarSrc, name) {
+    const img = document.getElementById('navAvatarImg');
+    const ph  = document.getElementById('navAvatarPlaceholder');
+    const nameEl = document.getElementById('navProfileName');
+
+    if (avatarSrc) {
+        if (img) { img.src = avatarSrc; img.style.display = 'block'; }
+        if (ph)  ph.style.display = 'none';
+    } else {
+        if (img) img.style.display = 'none';
+        if (ph)  ph.style.display = 'flex';
+    }
+    if (nameEl && name) {
+        nameEl.textContent = name.split(' ')[0]; // first name only
+    }
+};
 
 
 /* ─── Target Slider (arrow-controlled, no browser scrollbar) ─────────────── */
