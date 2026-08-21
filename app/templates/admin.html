@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Admin — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section admin-section">
+    <div class="section-container">
+
+        <div class="section-header">
+            <span class="section-badge">🔧 Admin</span>
+            <h1 class="section-title">Admin Dashboard</h1>
+            <p class="section-subtitle">Retrain all 72 ML models and monitor training progress in real time.</p>
+        </div>
+
+        <div class="glass-card admin-card">
+            <div class="card-header">
+                <h2 class="card-title">🤖 Model Retraining</h2>
+                <p class="card-subtitle">
+                    Retrains all 4 formats × 6 targets × 3 models. Takes ~20 seconds.
+                </p>
+            </div>
+
+            <div class="admin-status-row">
+                <div class="admin-stat">
+                    <span class="admin-stat-value" id="adminModels">72</span>
+                    <span class="admin-stat-label">Total Models</span>
+                </div>
+                <div class="admin-stat">
+                    <span class="admin-stat-value" id="adminLastTrained">Never</span>
+                    <span class="admin-stat-label">Last Trained</span>
+                </div>
+                <div class="admin-stat">
+                    <span class="admin-stat-value" id="adminStatus">Idle</span>
+                    <span class="admin-stat-label">Status</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:16px;">
+                <label class="form-label" for="adminKeyInput">Admin Key</label>
+                <input type="password" id="adminKeyInput" class="form-input" placeholder="Enter ADMIN_KEY…" style="max-width:320px;">
+            </div>
+
+            <button id="retrainBtn" class="btn btn-primary btn-lg">
+                🚀 Start Retraining
+            </button>
+
+            <!-- Live log -->
+            <div class="admin-log glass-card" id="adminLog" style="margin-top:24px; display:none;">
+                <div class="admin-log-header">📋 Training Log</div>
+                <div class="admin-log-body" id="adminLogBody"></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const keyInput = document.getElementById('adminKeyInput');
+
+// Pre-fill key from URL
+const urlKey = new URLSearchParams(window.location.search).get('key');
+if (urlKey && keyInput) keyInput.value = urlKey;
+
+document.getElementById('retrainBtn').addEventListener('click', async () => {
+    const key = keyInput.value.trim();
+    if (!key) { showToast('Enter the admin key first.', 'error'); return; }
+
+    const btn = document.getElementById('retrainBtn');
+    btn.disabled = true; btn.textContent = '⏳ Training…';
+    document.getElementById('adminStatus').textContent = 'Running';
+    document.getElementById('adminLog').style.display = '';
+    const logBody = document.getElementById('adminLogBody');
+    logBody.innerHTML = '';
+
+    try {
+        const resp = await fetch(`/admin/retrain?key=${encodeURIComponent(key)}`, { method: 'POST' });
+        if (resp.status === 403) { showToast('Invalid admin key.', 'error'); return; }
+        if (!resp.ok) { showToast('Failed to start retraining.', 'error'); return; }
+
+        showToast('Training started!', 'info');
+
+        // Stream log
+        const es = new EventSource(`/admin/stream?key=${encodeURIComponent(key)}`);
+        es.onmessage = (e) => {
+            if (e.data === '__done__') {
+                es.close();
+                document.getElementById('adminStatus').textContent = 'Done ✅';
+                btn.disabled = false; btn.textContent = '🚀 Start Retraining';
+                showToast('Retraining complete!', 'success');
+                // Refresh last trained
+                fetch(`/admin/status?key=${encodeURIComponent(key)}`)
+                    .then(r => r.json())
+                    .then(d => { if (d.last_trained) document.getElementById('adminLastTrained').textContent = d.last_trained; });
+                return;
+            }
+            const line = document.createElement('div');
+            line.className = 'admin-log-line';
+            line.textContent = e.data;
+            logBody.appendChild(line);
+            logBody.scrollTop = logBody.scrollHeight;
+        };
+        es.onerror = () => {
+            es.close();
+            document.getElementById('adminStatus').textContent = 'Error';
+            btn.disabled = false; btn.textContent = '🚀 Start Retraining';
+        };
+    } catch (err) {
+        showToast('Network error.', 'error');
+        btn.disabled = false; btn.textContent = '🚀 Start Retraining';
+    }
+});
+
+// Load current status
+window.addEventListener('DOMContentLoaded', async () => {
+    const key = new URLSearchParams(window.location.search).get('key') || '';
+    if (!key) return;
+    try {
+        const resp = await fetch(`/admin/status?key=${encodeURIComponent(key)}`);
+        if (resp.ok) {
+            const d = await resp.json();
+            if (d.last_trained) document.getElementById('adminLastTrained').textContent = d.last_trained;
+        }
+    } catch {}
+});
+</script>
+{% endblock %}

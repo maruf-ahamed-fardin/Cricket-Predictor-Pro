@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block title %}Over-by-Over Simulator — {{ fmt_config.name }} — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section simulate-section">
+    <div class="section-container">
+
+        <div class="section-header">
+            <span class="section-badge">⚙️ Simulator</span>
+            <h1 class="section-title">Over-by-Over Simulator</h1>
+            <p class="section-subtitle">Set opening conditions and simulate an entire innings over by over using the ML models.</p>
+        </div>
+
+        <!-- Format Switcher -->
+        <div class="switcher-row">
+            <div class="switcher-group">
+                <label class="switcher-label">Format</label>
+                <div class="switcher-buttons">
+                    {% for key, cfg in formats.items() %}
+                    <a href="/simulate/{{ key }}"
+                       class="switcher-btn {% if key == fmt %}switcher-btn-active{% endif %}">
+                        {{ cfg.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="simulate-layout">
+            <!-- Controls -->
+            <div class="glass-card simulate-controls">
+                <div class="card-header">
+                    <h2 class="card-title">🎛️ Match Setup</h2>
+                    <p class="card-subtitle">Set starting conditions for the innings</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Batting Average</label>
+                        <input type="number" id="sim-bat-avg" class="form-input" value="{{ fmt_config.avg_batting_avg }}" min="15" max="65" step="0.5">
+                        <span class="range-hint">Range: 15–65</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bowling Economy</label>
+                        <input type="number" id="sim-bowl-econ" class="form-input" value="{{ fmt_config.avg_economy }}" min="2" max="16" step="0.1">
+                        <span class="range-hint">Range: 2–16</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Strike Rate</label>
+                        <input type="number" id="sim-sr" class="form-input" value="{{ fmt_config.avg_strike_rate }}" min="30" max="220" step="1">
+                        <span class="range-hint">Range: 30–220</span>
+                    </div>
+                </div>
+
+                <div class="simulate-actions">
+                    <button id="startSimBtn" class="btn btn-primary btn-lg">
+                        ▶️ Start Simulation
+                    </button>
+                    <button id="resetSimBtn" class="btn btn-outline">
+                        🔄 Reset
+                    </button>
+                </div>
+
+                <!-- Wicket control -->
+                <div class="wicket-control" id="wicketControl" style="display:none;">
+                    <button id="wicketBtn" class="btn btn-outline danger-btn">
+                        🏏 Wicket Fell
+                    </button>
+                    <span class="wicket-count">Wickets: <strong id="wicketDisplay">0</strong></span>
+                </div>
+            </div>
+
+            <!-- Live Score Display -->
+            <div class="glass-card simulate-scoreboard">
+                <div class="card-header">
+                    <h2 class="card-title">🏏 Live Scorecard</h2>
+                    <div class="sim-format-badge format-color-{{ fmt }}">{{ fmt_config.name }}</div>
+                </div>
+
+                <div class="sim-total-display">
+                    <div class="sim-score" id="simScore">0</div>
+                    <div class="sim-wickets" id="simWickets">/ 0</div>
+                    <div class="sim-overs" id="simOvers">0.0 ov</div>
+                </div>
+
+                <div class="sim-run-rate" id="simRunRate">Run Rate: —</div>
+
+                <!-- Over-by-over log -->
+                <div class="over-log" id="overLog">
+                    <div class="over-log-empty">Start the simulation to see over-by-over predictions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cumulative Run Chart -->
+        <div class="glass-card simulate-chart-card">
+            <h2 class="card-title">📈 Run Progression</h2>
+            <div class="result-chart-wrapper">
+                <canvas id="simChart" aria-label="Cumulative run chart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const FMT = "{{ fmt }}";
+const MAX_OVERS = {{ fmt_config.max_overs }};
+const POWERPLAY_END = {{ fmt_config.powerplay_end }};
+const DEATH_START = {{ fmt_config.death_over_start }};
+
+let wickets = 0, totalRuns = 0, currentOver = 0, simRunning = false;
+let overData = [];
+let simChart = null;
+
+function getPhase(over) {
+    if (over <= POWERPLAY_END) return 0;
+    if (over >= DEATH_START) return 2;
+    return 1;
+}
+
+async function predictOver(over) {
+    const batAvg  = parseFloat(document.getElementById('sim-bat-avg').value) || 32;
+    const bowlEcon = parseFloat(document.getElementById('sim-bowl-econ').value) || 8;
+    const sr       = parseFloat(document.getElementById('sim-sr').value) || 130;
+    const phase    = getPhase(over);
+
+    const resp = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            format: FMT,
+            target: 'runs_in_over',
+            features: {
+                over_number: over,
+                wickets_fallen: wickets,
+                batsman_avg: batAvg,
+                bowler_econ: bowlEcon,
+                strike_rate: sr,
+                match_phase: phase,
+            }
+        })
+    });
+    return await resp.json();
+}
+
+async function runNextOver() {
+    if (!simRunning || currentOver >= MAX_OVERS || wickets >= 10) {
+        endSimulation(); return;
+    }
+
+    currentOver++;
+    const result = await predictOver(currentOver);
+    if (!result.predictions) { showToast('Prediction error', 'error'); return; }
+
+    const bestModel = result.best_model;
+    const pred = bestModel ? result.predictions[bestModel]?.value : 0;
+    const runs = Math.max(0, Math.round(pred));
+    totalRuns += runs;
+
+    overData.push({ over: currentOver, runs, total: totalRuns });
+
+    updateScoreboard();
+    appendOverLog(currentOver, runs, bestModel);
+    updateChart();
+
+    if (currentOver < MAX_OVERS && wickets < 10 && simRunning) {
+        setTimeout(runNextOver, 600);
+    } else {
+        endSimulation();
+    }
+}
+
+function updateScoreboard() {
+    document.getElementById('simScore').textContent = totalRuns;
+    document.getElementById('simWickets').textContent = `/ ${wickets}`;
+    document.getElementById('simOvers').textContent = `${currentOver}.0 ov`;
+    const rr = currentOver > 0 ? (totalRuns / currentOver).toFixed(2) : '—';
+    document.getElementById('simRunRate').textContent = `Run Rate: ${rr}`;
+}
+
+function appendOverLog(over, runs, bestModel) {
+    const log = document.getElementById('overLog');
+    if (over === 1) log.innerHTML = '';
+    const phase = ['PP','Mid','Death'][getPhase(over)];
+    const row = document.createElement('div');
+    row.className = `over-log-row ${runs >= 12 ? 'over-log-big' : runs <= 3 ? 'over-log-low' : ''}`;
+    row.innerHTML = `<span class="over-num">Ov ${over}</span><span class="over-phase-badge">${phase}</span><span class="over-runs">${runs} runs</span><span class="over-total">(${totalRuns} tot)</span>`;
+    log.appendChild(row);
+    log.scrollTop = log.scrollHeight;
+}
+
+function updateChart() {
+    if (!simChart) return;
+    simChart.data.labels = overData.map(d => `Ov ${d.over}`);
+    simChart.data.datasets[0].data = overData.map(d => d.total);
+    simChart.data.datasets[1].data = overData.map(d => d.runs);
+    simChart.update('none');
+}
+
+function endSimulation() {
+    simRunning = false;
+    document.getElementById('startSimBtn').textContent = '▶️ Start Simulation';
+    document.getElementById('wicketControl').style.display = 'none';
+    showToast(`Simulation complete! ${totalRuns}/${wickets} in ${currentOver} overs`, 'success');
+}
+
+function initChart() {
+    const ctx = document.getElementById('simChart').getContext('2d');
+    if (simChart) simChart.destroy();
+    simChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Total Runs',
+                    data: [],
+                    borderColor: '#4ade80',
+                    backgroundColor: 'rgba(74,222,128,0.1)',
+                    borderWidth: 2.5, tension: 0.4, fill: true, pointRadius: 3,
+                },
+                {
+                    label: 'Runs/Over',
+                    data: [],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139,92,246,0.1)',
+                    borderWidth: 2, tension: 0.4, fill: false, pointRadius: 3,
+                    yAxisID: 'y2',
+                }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Inter' } } } },
+            scales: {
+                x: { ticks: { color: '#94a3b8', font: { family: 'Inter', size: 10 } }, grid: { color: 'rgba(148,163,184,0.08)' } },
+                y: { ticks: { color: '#94a3b8', font: { family: 'Inter' } }, grid: { color: 'rgba(148,163,184,0.08)' } },
+                y2: { position: 'right', ticks: { color: '#8b5cf6', font: { family: 'Inter' } }, grid: { display: false } }
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initChart();
+
+    document.getElementById('startSimBtn').addEventListener('click', () => {
+        if (simRunning) { simRunning = false; document.getElementById('startSimBtn').textContent = '▶️ Start Simulation'; return; }
+        wickets = 0; totalRuns = 0; currentOver = 0; overData = [];
+        document.getElementById('overLog').innerHTML = '';
+        updateScoreboard();
+        initChart();
+        simRunning = true;
+        document.getElementById('startSimBtn').textContent = '⏸ Pause';
+        document.getElementById('wicketControl').style.display = 'flex';
+        runNextOver();
+    });
+
+    document.getElementById('resetSimBtn').addEventListener('click', () => {
+        simRunning = false; wickets = 0; totalRuns = 0; currentOver = 0; overData = [];
+        document.getElementById('overLog').innerHTML = '<div class="over-log-empty">Start the simulation to see over-by-over predictions</div>';
+        document.getElementById('startSimBtn').textContent = '▶️ Start Simulation';
+        document.getElementById('wicketControl').style.display = 'none';
+        updateScoreboard();
+        initChart();
+    });
+
+    document.getElementById('wicketBtn')?.addEventListener('click', () => {
+        if (wickets < 10) {
+            wickets++;
+            document.getElementById('wicketDisplay').textContent = wickets;
+            document.getElementById('simWickets').textContent = `/ ${wickets}`;
+            showToast(`Wicket! ${wickets} down.`, 'warning');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}API Documentation — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section api-docs-section">
+    <div class="section-container">
+
+        <div class="section-header">
+            <span class="section-badge">🔌 API</span>
+            <h1 class="section-title">REST API Documentation</h1>
+            <p class="section-subtitle">Interactive reference for all Cricket Predictor Pro API endpoints.</p>
+        </div>
+
+        <!-- Base URL -->
+        <div class="glass-card api-base-card">
+            <div class="api-base-url">
+                <span class="api-base-label">Base URL</span>
+                <code class="api-base-val" id="baseUrlDisplay"></code>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin:8px 0 0;">
+                All endpoints return <code>application/json</code>. No authentication required for read endpoints.
+            </p>
+        </div>
+
+        <!-- Endpoints -->
+        <div class="api-endpoints">
+
+            <!-- POST /api/predict -->
+            <div class="glass-card api-endpoint-card">
+                <div class="api-endpoint-header">
+                    <span class="api-method api-post">POST</span>
+                    <span class="api-path">/api/predict</span>
+                    <span class="api-desc">Run prediction with all 3 models</span>
+                </div>
+                <div class="api-section-title">Request Body</div>
+                <pre class="api-code">{
+  "format":  "t20",          // t10 | t20 | odi | test
+  "target":  "runs_in_over", // see targets endpoint
+  "features": {
+    "over_number":    15,
+    "wickets_fallen":  3,
+    "batsman_avg":    38.0,
+    "bowler_econ":     8.5,
+    "strike_rate":   135.0,
+    "match_phase":     2
+  }
+}</pre>
+                <div class="api-section-title">Response</div>
+                <pre class="api-code">{
+  "format":     "T20",
+  "format_key": "t20",
+  "target":     "Runs in Over",
+  "predictions": {
+    "Linear Regression":     { "value": 9.8,  "mae": 2.44, "r2": 0.48, "rmse": 3.1 },
+    "Gradient Boosting":     { "value": 10.3, "mae": 2.31, "r2": 0.53, "rmse": 2.9 },
+    "Polynomial Regression": { "value": 10.1, "mae": 2.38, "r2": 0.51, "rmse": 3.0 }
+  },
+  "best_model": "Gradient Boosting"
+}</pre>
+                <div class="api-try">
+                    <button class="btn btn-outline btn-sm" onclick="tryPredict()">▶ Try it</button>
+                    <pre class="api-try-result" id="predictResult" style="display:none;"></pre>
+                </div>
+            </div>
+
+            <!-- GET /api/formats -->
+            <div class="glass-card api-endpoint-card">
+                <div class="api-endpoint-header">
+                    <span class="api-method api-get">GET</span>
+                    <span class="api-path">/api/formats</span>
+                    <span class="api-desc">List all available cricket formats</span>
+                </div>
+                <div class="api-section-title">Response</div>
+                <pre class="api-code">{{ {'t10':{'name':'T10','max_overs':10},'t20':{'name':'T20','max_overs':20},'odi':{'name':'ODI','max_overs':50},'test':{'name':'Test','max_overs':90}} | tojson(indent=2) }}</pre>
+                <div class="api-try">
+                    <a href="/api/formats" target="_blank" class="btn btn-outline btn-sm">▶ Open in browser</a>
+                </div>
+            </div>
+
+            <!-- GET /api/targets -->
+            <div class="glass-card api-endpoint-card">
+                <div class="api-endpoint-header">
+                    <span class="api-method api-get">GET</span>
+                    <span class="api-path">/api/targets</span>
+                    <span class="api-desc">List all prediction targets</span>
+                </div>
+                <div class="api-try">
+                    <a href="/api/targets" target="_blank" class="btn btn-outline btn-sm">▶ Open in browser</a>
+                </div>
+            </div>
+
+            <!-- GET /api/defaults -->
+            <div class="glass-card api-endpoint-card">
+                <div class="api-endpoint-header">
+                    <span class="api-method api-get">GET</span>
+                    <span class="api-path">/api/defaults/&lt;fmt&gt;/&lt;target&gt;</span>
+                    <span class="api-desc">Default feature values for a format+target</span>
+                </div>
+                <div class="api-try">
+                    <a href="/api/defaults/t20/runs_in_over" target="_blank" class="btn btn-outline btn-sm">▶ Try t20/runs_in_over</a>
+                </div>
+            </div>
+
+            <!-- GET /api/ranges -->
+            <div class="glass-card api-endpoint-card">
+                <div class="api-endpoint-header">
+                    <span class="api-method api-get">GET</span>
+                    <span class="api-path">/api/ranges/&lt;fmt&gt;/&lt;target&gt;</span>
+                    <span class="api-desc">Min/max/step/unit for each input feature</span>
+                </div>
+                <div class="api-try">
+                    <a href="/api/ranges/t20/runs_in_over" target="_blank" class="btn btn-outline btn-sm">▶ Try t20/runs_in_over</a>
+                </div>
+            </div>
+
+            <!-- GET /health -->
+            <div class="glass-card api-endpoint-card">
+                <div class="api-endpoint-header">
+                    <span class="api-method api-get">GET</span>
+                    <span class="api-path">/health</span>
+                    <span class="api-desc">Health check — models loaded status</span>
+                </div>
+                <div class="api-try">
+                    <a href="/health" target="_blank" class="btn btn-outline btn-sm">▶ Check health</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('baseUrlDisplay').textContent = window.location.origin;
+
+    async function tryPredict() {
+        const btn = event.target;
+        btn.textContent = 'Running…'; btn.disabled = true;
+        const el = document.getElementById('predictResult');
+        try {
+            const resp = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    format: 't20', target: 'runs_in_over',
+                    features: { over_number:18, wickets_fallen:2, batsman_avg:42, bowler_econ:9.0, strike_rate:145, match_phase:2 }
+                })
+            });
+            const data = await resp.json();
+            el.textContent = JSON.stringify(data, null, 2);
+            el.style.display = '';
+            showToast('Prediction successful!', 'success');
+        } catch {
+            el.textContent = 'Error fetching prediction.';
+            el.style.display = '';
+        } finally {
+            btn.textContent = '▶ Try it'; btn.disabled = false;
+        }
+    }
+</script>
+{% endblock %}
