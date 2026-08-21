@@ -6,6 +6,11 @@
   "nav.about": "সম্পর্কে",
   "nav.history": "ইতিহাস",
   "nav.profile": "প্রোফাইল",
+  "settings.title": "সেটিংস",
+  "settings.language": "ভাষা",
+  "settings.theme": "থিম",
+  "settings.dark": "🌙 ডার্ক",
+  "settings.light": "☀️ লাইট",
 
   "footer.brand": "ক্রিকেট প্রেডিক্টর প্রো",
   "footer.desc": "AI-চালিত ক্রিকেট পূর্বাভাস · লিনিয়ার রিগ্রেশন · গ্রেডিয়েন্ট বুস্টিং · পলিনোমিয়াল রিগ্রেশন",

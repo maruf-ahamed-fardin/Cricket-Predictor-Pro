@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initToastSystem();
     initI18n();
+    initSettingsDropdown();
     registerServiceWorker();
     initShareButton();
     initExportButtons();
@@ -484,17 +485,24 @@ const I18N_KEY = 'cpp_lang';
 let _translations = {};
 
 function initI18n() {
-    const btn = document.getElementById('langToggleBtn');
-    if (!btn) return;
-
     const savedLang = localStorage.getItem(I18N_KEY) || 'en';
     loadLanguage(savedLang);
 
-    btn.addEventListener('click', () => {
-        const current = localStorage.getItem(I18N_KEY) || 'en';
-        const next = current === 'en' ? 'bn' : 'en';
-        loadLanguage(next);
-    });
+    // Old single button support if any
+    const btn = document.getElementById('langToggleBtn');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const current = localStorage.getItem(I18N_KEY) || 'en';
+            const next = current === 'en' ? 'bn' : 'en';
+            loadLanguage(next);
+        });
+    }
+
+    // Segmented option buttons
+    const optEn = document.getElementById('langOptEn');
+    const optBn = document.getElementById('langOptBn');
+    if (optEn) optEn.addEventListener('click', () => loadLanguage('en'));
+    if (optBn) optBn.addEventListener('click', () => loadLanguage('bn'));
 }
 
 async function loadLanguage(lang) {
@@ -503,16 +511,53 @@ async function loadLanguage(lang) {
         _translations = await resp.json();
         applyTranslations(_translations);
         localStorage.setItem(I18N_KEY, lang);
+
+        // Update single toggle btn if present
         const btn = document.getElementById('langToggleBtn');
         if (btn) {
             btn.textContent = lang === 'en' ? 'বাংলা' : 'English';
             btn.setAttribute('title', lang === 'en' ? 'Switch to বাংলা' : 'Switch to English');
         }
+
+        // Update segmented buttons in Settings dropdown
+        const optEn = document.getElementById('langOptEn');
+        const optBn = document.getElementById('langOptBn');
+        if (optEn) optEn.classList.toggle('active', lang === 'en');
+        if (optBn) optBn.classList.toggle('active', lang === 'bn');
+
         document.documentElement.lang = lang;
         window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang, translations: _translations } }));
     } catch (e) {
         console.warn('i18n load failed:', e);
     }
+}
+
+function initSettingsDropdown() {
+    const trigger = document.getElementById('settingsDropdownTrigger');
+    const dropdown = trigger?.closest('.nav-settings-dropdown');
+    if (!trigger || !dropdown) return;
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.toggle('dropdown-open');
+        trigger.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('dropdown-open');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            dropdown.classList.remove('dropdown-open');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+    });
 }
 
 function applyTranslations(t) {

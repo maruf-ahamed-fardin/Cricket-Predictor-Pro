@@ -6,6 +6,11 @@
   "nav.about": "About",
   "nav.history": "History",
   "nav.profile": "Profile",
+  "settings.title": "Settings",
+  "settings.language": "Language",
+  "settings.theme": "Theme",
+  "settings.dark": "🌙 Dark",
+  "settings.light": "☀️ Light",
 
   "footer.brand": "Cricket Predictor Pro",
   "footer.desc": "AI-powered cricket prediction · Linear Regression · Gradient Boosting · Polynomial Regression",
