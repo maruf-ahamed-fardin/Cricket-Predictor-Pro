@@ -1,279 +1,118 @@
 # 🏏 Cricket Predictor Pro
 
-> **Production-ready AI-powered cricket statistics prediction platform**
-> Predict runs, averages, and over-by-over stats for T10, T20, ODI, and Test formats using 3 machine learning models simultaneously.
-
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
-[![Flask](https://img.shields.io/badge/Flask-3.x-000000?style=flat&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.4+-F7931E?style=flat&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
+> **AI-Powered Cricket Match Analytics & Statistics Prediction Platform**
+> Predict match outcomes, over-by-over scoring dynamics, and player milestones across **T10, T20, ODI, and Test** formats using multiple machine learning algorithms simultaneously.
 
 ---
 
-## ✨ Features
+## 💡 The Core Idea
 
-| Feature | Details |
-|---------|---------|
-| 🤖 **3 ML Models** | Linear Regression · Gradient Boosting · Polynomial Regression |
-| 📊 **6 Prediction Targets** | Runs/Over · Total Runs · Batting Avg · Bowling Avg · Run Rate · Overs Batted |
-| 🏏 **4 Cricket Formats** | T10 · T20 · ODI · Test (independently trained) |
-| 🌓 **Dark / Light Mode** | Persistent theme toggle across all pages |
-| 👤 **User Profile** | Custom or cricket avatar · local storage persistence |
-| 📱 **Mobile Responsive** | Fully responsive, works on all screen sizes |
-| ⚡ **REST API** | JSON endpoint for programmatic predictions |
-| 🏭 **Production-Ready** | Gunicorn WSGI · Rotating logs · Error pages · Health check |
+Cricket is an evolving, data-intensive sport where match situations fluctuate ball-by-ball. Traditional statistical averages often fail to capture dynamic factors such as match phase (Powerplay vs Death overs), bowler economy pressure, and collapsing wickets.
+
+**Cricket Predictor Pro** solves this by providing:
+1. **Multi-Model Inference**: Instead of relying on a single black-box algorithm, every prediction runs across **Linear Regression**, **Gradient Boosting**, and **Polynomial Regression** in parallel, comparing outputs with real-time confidence intervals ($\pm\text{MAE}$).
+2. **Format-Aware Intelligence**: Calibrated models tailored specifically for the statistical distributions of **T10**, **T20**, **ODI**, and **Test** cricket.
+3. **Interactive Simulation & Comparison**: Live over-by-over innings progression simulator, side-by-side player/scenario comparisons, and complete REST API accessibility.
 
 ---
 
-## 🖼️ Screenshots
+## 🌟 Key Capabilities
 
-### Home — Dark Mode
-![Home Dark](app/static/avatars/avatar_coach.jpg)
+- **🤖 72 Pre-Trained ML Models**: 3 algorithms × 6 targets × 4 formats with automated evaluation metrics (MAE, R², RMSE).
+- **⚙️ Over-by-Over Match Simulator**: Simulates full innings progression ball-by-ball with dynamic wickets and live run-rate tracking.
+- **⚔️ Player / Scenario Comparison**: Compare two distinct match situations simultaneously with grouped visual diffs.
+- **📊 Model Analytics Dashboard**: Interactive Bar and Radar performance charts with instant filtering and algorithm leaderboards.
+- **📋 Persistent Prediction History**: Locally saved prediction records with single-click re-runs and CSV export.
+- **🔌 OpenAPI REST API**: Fully documented endpoints with live browser-testing capabilities for external integrations.
+- **🛡️ Enterprise Security**: Hardened with strict Content Security Policy (CSP), anti-clickjacking, XSS protections, and permissions policies.
+- **🌐 Localization & PWA**: Bilingual support (**English** & **বাংলা**) and installable Progressive Web App with offline caching.
 
 ---
 
-## 🗂️ Project Structure
+## 🏗️ Architecture Overview
 
 ```
-Cricket-Predictor-Pro/
-│
-├── app/                          # Flask application package
-│   ├── __init__.py               # App factory (logging, error handlers, config)
-│   ├── main.py                   # Development entry point
-│   ├── routes/
-│   │   └── predict.py            # All web + API routes
-│   ├── services/
-│   │   ├── data_generator.py     # Synthetic cricket data generation
-│   │   ├── model_trainer.py      # Training pipeline (72 models)
-│   │   └── predictor.py          # Inference service
-│   ├── templates/
-│   │   ├── base.html             # Base layout (navbar, theme toggle, footer)
-│   │   ├── index.html            # Landing page
-│   │   ├── predict.html          # Prediction form + results
-│   │   ├── compare.html          # Model comparison dashboard
-│   │   ├── profile.html          # User profile page
-│   │   └── error.html            # 404 / 500 error page
-│   └── static/
-│       ├── css/style.css         # Premium dark + light theme CSS
-│       ├── js/app.js             # Frontend JS (theme, slider, animations)
-│       └── avatars/              # 6 cricket-themed default avatars
-│
-├── models/                       # Saved .joblib model files (72 total)
-│   ├── t10/ t20/ odi/ test/
-│   └── metrics.json              # Model evaluation metrics
-│
-├── data/                         # Generated training datasets (CSV)
-├── logs/                         # Rotating log files (auto-created)
-│
-├── train_models.py               # One-shot model training script
-├── wsgi.py                       # Gunicorn WSGI entry point
-├── Procfile                      # Heroku/Railway/Render deployment
-├── requirements.txt              # Python dependencies
-├── .env.example                  # Environment variable template
-└── .gitignore
+User Input / API Request
+         │
+         ▼
+┌─────────────────────────────────────────────────────────┐
+│              Flask Web & REST API Layer                 │
+│    (Security Middleware, Validation, Error Handlers)     │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+         ┌─────────────────┴─────────────────┐
+         ▼                                   ▼
+┌──────────────────────────────┐   ┌───────────────────────┐
+│     Inference Engine         │   │   Simulator & Compare │
+│  (CricketPredictor Service)  │   │  (Multi-Scenario Run) │
+└──────────────┬───────────────┘   └───────────┬───────────┘
+               │                               │
+               ▼                               ▼
+┌──────────────────────────────────────────────────────────┐
+│              72 Machine Learning Pipelines               │
+│  • Linear Regression    • Gradient Boosting              │
+│  • Polynomial Regression                                 │
+└──────────────────────────┬───────────────────────────────┘
+                           │
+                           ▼
+┌──────────────────────────────────────────────────────────┐
+│               Interactive Visual Results                 │
+│  (Confidence ±MAE, Chart.js Visuals, History, Exports)   │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-### 1. Clone & Setup
+### 1. Installation
 
 ```bash
+# Clone the repository
 git clone https://github.com/maruf-ahamed-fardin/Cricket-Predictor-Pro.git
 cd Cricket-Predictor-Pro
 
-# Create virtual environment
+# Create and activate virtual environment
 python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Activate (macOS/Linux)
-source venv/bin/activate
+venv\Scripts\activate   # Windows
+# source venv/bin/activate  # macOS / Linux
 
 # Install dependencies
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
-### 2. Train Models
+### 2. Run Application
 
 ```bash
-python train_models.py
+# Start the Flask development server
+python wsgi.py
 ```
 
-This generates synthetic format-specific data and trains **72 models** (4 formats × 6 targets × 3 algorithms) in ~20 seconds.
+Open [http://localhost:5000](http://localhost:5000) in your browser.
 
-```
-=================================================================
-  🏏  Cricket Predictor Pro — Model Training Pipeline
-=================================================================
-  Training T20 | Runs in Over     ✓  Best: Polynomial Regression (MAE: 2.44)
-  Training T20 | Batting Average  ✓  Best: Gradient Boosting     (MAE: 3.03)
-  ...
-  Total models trained: 72 | Time: 19.5s
-=================================================================
-```
-
-### 3. Run Development Server
+### 3. Run Test Suite
 
 ```bash
-python -m app.main
-```
-
-Open **http://localhost:5000** in your browser.
-
----
-
-## 🌐 Pages & Routes
-
-| Route | Page |
-|-------|------|
-| `/` | Home — format & target selection |
-| `/predict/<fmt>` | Prediction form (`fmt`: t10, t20, odi, test) |
-| `/compare` | Model comparison dashboard with Chart.js |
-| `/profile` | User profile with avatar picker |
-| `/health` | Health check endpoint (JSON) |
-| `/api/predict` | Prediction API (POST, JSON) |
-| `/api/formats` | Available formats & targets (GET, JSON) |
-
----
-
-## 🔌 REST API
-
-### POST `/api/predict`
-
-**Request:**
-```json
-{
-  "format": "t20",
-  "target": "runs_in_over",
-  "features": {
-    "over_number": 18,
-    "wickets_fallen": 2,
-    "batsman_avg": 40,
-    "bowler_econ": 9.0,
-    "strike_rate": 145,
-    "match_phase": 2
-  }
-}
-```
-
-**Response:**
-```json
-{
-  "format": "t20",
-  "target": "runs_in_over",
-  "predictions": {
-    "Linear Regression":      { "value": 10.3, "unit": "runs" },
-    "Gradient Boosting":      { "value": 11.1, "unit": "runs" },
-    "Polynomial Regression":  { "value": 10.8, "unit": "runs" }
-  },
-  "best_model": "Gradient Boosting"
-}
+python -m pytest -v
 ```
 
 ---
 
-## 🤖 ML Models & Performance
+## 📖 API Reference
 
-### Training Summary
+Interactive API documentation with live testing is available at `/api/docs` or via the `openapi.yaml` specification file.
 
-| Format | Best Model | Avg MAE |
-|--------|-----------|---------|
-| T10 | Gradient Boosting | 3.89 |
-| T20 | Gradient Boosting | 3.91 |
-| ODI | Gradient Boosting | 4.25 |
-| Test | Gradient Boosting | 4.89 |
-
-### Models Used
-
-| Algorithm | Description | Best For |
-|-----------|-------------|---------|
-| **Linear Regression** | Fast, interpretable baseline | Total runs, overs |
-| **Gradient Boosting** | Captures non-linear patterns | Batting/bowling averages |
-| **Polynomial Regression** | Models rate-based relationships | Runs/over, run rate |
-
-### Prediction Targets
-
-| Target Key | Description |
-|-----------|-------------|
-| `runs_in_over` | Expected runs in a specific over |
-| `total_innings_runs` | Total runs in an innings |
-| `batting_avg` | Batsman's expected average |
-| `bowling_avg` | Bowler's expected average |
-| `total_run_avg` | Team run rate |
-| `overs_batted` | Expected overs a batsman faces |
-
----
-
-## 🏭 Production Deployment
-
-### Gunicorn (Linux/macOS)
-
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 wsgi:app
-```
-
-### Environment Variables
-
-```bash
-cp .env.example .env
-# Edit .env:
-FLASK_ENV=production
-SECRET_KEY=your-long-random-secret-key
-PORT=8000
-```
-
-### Deploy to Railway / Render / Heroku
-
-The `Procfile` is already configured:
-```
-web: gunicorn -w 4 -b 0.0.0.0:$PORT wsgi:app
-```
-
-Just connect your GitHub repo and deploy.
-
----
-
-## 🧩 Feature Details
-
-### Dark / Light Mode
-- Toggle with the 🌙/☀️ button in the navbar
-- Preference saved in `localStorage`, persists across sessions
-- Applied before page render (no flash of wrong theme)
-
-### User Profile
-- 6 default cricket avatars: Batsman, Bowler, Keeper, All-rounder, Umpire, Analyst
-- Upload your own photo (stored as base64 in localStorage)
-- Selected avatar appears in the navbar
-- Fields: Name, Username, Email, Country, Bio, Favourite Format/Team/Player
-
-### Target Slider
-- Arrow-button navigation on the prediction page
-- Swipe gesture support on mobile
-- No browser scrollbar — smooth JS scroll
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Backend** | Python 3.10+ · Flask 3.x · Jinja2 |
-| **ML** | scikit-learn · NumPy · pandas · joblib |
-| **Frontend** | Vanilla HTML/CSS/JS · Chart.js |
-| **Fonts** | Google Fonts — Inter, JetBrains Mono |
-| **Production** | Gunicorn · RotatingFileHandler |
-| **Storage** | localStorage (client-side profile) |
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/health` | Application & model health check |
+| `GET` | `/api/formats` | List supported cricket formats |
+| `GET` | `/api/targets` | List available prediction targets |
+| `GET` | `/api/ranges/<fmt>/<target>` | Get feature bounds & units |
+| `POST` | `/api/predict` | Execute 3-model prediction |
 
 ---
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-<p align="center">Built with 🏏 by <a href="https://github.com/maruf-ahamed-fardin">Maruf Ahamed Fardin</a></p>
+This project is licensed under the MIT License.
