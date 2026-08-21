@@ -265,7 +265,8 @@ const MAX_HISTORY = 50;
 
 window.savePredictionToHistory = function(entry) {
     try {
-        if (typeof getPlatformSettings === 'function' && getPlatformSettings().autoSaveHistory === false) {
+        const s = typeof getPlatformSettings === 'function' ? getPlatformSettings() : {};
+        if (s.autoSaveHistory === false || s.incognitoMode === true) {
             return;
         }
         const history = getPredictionHistory();
@@ -552,6 +553,142 @@ const DEFAULT_SETTINGS = {
     defaultModel: 'best',
     showConfidence: true,
     autoSaveHistory: true,
+    soundFx: true,
+    confetti: true,
+    precision: '2',
+    oversNotation: 'overs',
+    incognitoMode: false,
+};
+
+let _audioCtx = null;
+function getAudioContext() {
+    try {
+        if (!_audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) _audioCtx = new AudioContextClass();
+        }
+        if (_audioCtx && _audioCtx.state === 'suspended') {
+            _audioCtx.resume();
+        }
+        return _audioCtx;
+    } catch {
+        return null;
+    }
+}
+
+window.playCricketSound = function(type) {
+    const s = getPlatformSettings();
+    if (s.soundFx === false) return;
+    try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime;
+        
+        if (type === 'click') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(750, now);
+            osc.frequency.exponentialRampToValueAtTime(320, now + 0.04);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.04);
+        } else if (type === 'bat') {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(340, now);
+            osc.frequency.exponentialRampToValueAtTime(90, now + 0.12);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.12);
+        } else if (type === 'celebrate' || type === 'success') {
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now + i * 0.07);
+                gain.gain.setValueAtTime(0.1, now + i * 0.07);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now + i * 0.07);
+                osc.stop(now + i * 0.07 + 0.3);
+            });
+        }
+    } catch {}
+};
+
+window.triggerConfetti = function() {
+    const s = getPlatformSettings();
+    if (s.confetti === false) return;
+
+    let canvas = document.getElementById('confettiCanvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'confettiCanvas';
+        canvas.style.position = 'fixed';
+        canvas.style.inset = '0';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '999999';
+        document.body.appendChild(canvas);
+    }
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#4ade80', '#06b6d4', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6'];
+    const particles = [];
+    for (let i = 0; i < 85; i++) {
+        particles.push({
+            x: canvas.width / 2 + (Math.random() - 0.5) * 160,
+            y: canvas.height * 0.45 + (Math.random() - 0.5) * 80,
+            vx: (Math.random() - 0.5) * 16,
+            vy: (Math.random() - 1.2) * 14 - 3,
+            size: Math.random() * 8 + 5,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 12,
+            opacity: 1,
+        });
+    }
+
+    let start = performance.now();
+    function render(time) {
+        const elapsed = (time - start) / 1000;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.38;
+            p.rotation += p.rotSpeed;
+            p.opacity = Math.max(0, 1 - elapsed / 2.2);
+
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.opacity;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+            ctx.restore();
+        });
+
+        if (elapsed < 2.2) {
+            requestAnimationFrame(render);
+        } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.remove();
+        }
+    }
+    requestAnimationFrame(render);
 };
 
 window.getPlatformSettings = function() {
@@ -634,12 +771,27 @@ function updateSettingsModalUI(s) {
     const autoSaveCheck = document.getElementById('settingAutoSave');
     if (autoSaveCheck) autoSaveCheck.checked = s.autoSaveHistory !== false;
 
+    const soundCheck = document.getElementById('settingSoundFx');
+    if (soundCheck) soundCheck.checked = s.soundFx !== false;
+
+    const confettiCheck = document.getElementById('settingConfetti');
+    if (confettiCheck) confettiCheck.checked = s.confetti !== false;
+
+    const incognitoCheck = document.getElementById('settingIncognitoMode');
+    if (incognitoCheck) incognitoCheck.checked = !!s.incognitoMode;
+
     // Selects
     const fmtSelect = document.getElementById('settingDefaultFormat');
     if (fmtSelect && s.defaultFormat) fmtSelect.value = s.defaultFormat;
 
     const modelSelect = document.getElementById('settingDefaultModel');
     if (modelSelect && s.defaultModel) modelSelect.value = s.defaultModel;
+
+    const precisionSelect = document.getElementById('settingPrecision');
+    if (precisionSelect && s.precision) precisionSelect.value = s.precision;
+
+    const oversSelect = document.getElementById('settingOversNotation');
+    if (oversSelect && s.oversNotation) oversSelect.value = s.oversNotation;
 
     // Stored predictions count
     const historyDesc = document.getElementById('settingsHistoryCountDesc');
@@ -666,6 +818,7 @@ function initSettingsDropdown() {
     if (trigger && dropdown) {
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
+            playCricketSound('click');
             const isOpen = dropdown.classList.toggle('dropdown-open');
             trigger.setAttribute('aria-expanded', isOpen);
         });
@@ -682,6 +835,7 @@ function initSettingsDropdown() {
     // Open full modal
     function openModal() {
         if (!modalBackdrop) return;
+        playCricketSound('click');
         dropdown?.classList.remove('dropdown-open');
         modalBackdrop.style.display = 'flex';
         requestAnimationFrame(() => modalBackdrop.classList.add('modal-open'));
@@ -690,6 +844,7 @@ function initSettingsDropdown() {
 
     function closeModal() {
         if (!modalBackdrop) return;
+        playCricketSound('click');
         modalBackdrop.classList.remove('modal-open');
         setTimeout(() => { modalBackdrop.style.display = 'none'; }, 250);
     }
@@ -717,6 +872,7 @@ function initSettingsDropdown() {
     // Modal Tabs Navigation
     document.querySelectorAll('.settings-tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
+            playCricketSound('click');
             const targetTab = btn.dataset.tab;
             document.querySelectorAll('.settings-tab-btn').forEach(b => {
                 const isActive = b === btn;
@@ -738,6 +894,7 @@ function initSettingsDropdown() {
     // Modal Settings Controls
     document.querySelectorAll('[data-theme-val]').forEach(btn => {
         btn.addEventListener('click', () => {
+            playCricketSound('click');
             savePlatformSettings({ theme: btn.dataset.themeVal });
             showToast(`Theme set to ${btn.dataset.themeVal}`, 'info', 2000);
         });
@@ -746,6 +903,7 @@ function initSettingsDropdown() {
     const compactCheck = document.getElementById('settingCompactMode');
     if (compactCheck) {
         compactCheck.addEventListener('change', (e) => {
+            playCricketSound('click');
             savePlatformSettings({ compact: e.target.checked });
             showToast(e.target.checked ? 'Compact mode enabled' : 'Compact mode disabled', 'info', 2000);
         });
@@ -754,6 +912,7 @@ function initSettingsDropdown() {
     const animCheck = document.getElementById('settingAnimations');
     if (animCheck) {
         animCheck.addEventListener('change', (e) => {
+            playCricketSound('click');
             savePlatformSettings({ animations: e.target.checked });
             showToast(e.target.checked ? 'Animations & video enabled' : 'Reduced motion enabled', 'info', 2000);
         });
@@ -762,6 +921,7 @@ function initSettingsDropdown() {
     const fmtSelect = document.getElementById('settingDefaultFormat');
     if (fmtSelect) {
         fmtSelect.addEventListener('change', (e) => {
+            playCricketSound('click');
             savePlatformSettings({ defaultFormat: e.target.value });
             showToast(`Default format set to ${e.target.value.toUpperCase()}`, 'success', 2000);
         });
@@ -770,6 +930,7 @@ function initSettingsDropdown() {
     const modelSelect = document.getElementById('settingDefaultModel');
     if (modelSelect) {
         modelSelect.addEventListener('change', (e) => {
+            playCricketSound('click');
             savePlatformSettings({ defaultModel: e.target.value });
             showToast(`Model priority updated`, 'success', 2000);
         });
@@ -778,13 +939,69 @@ function initSettingsDropdown() {
     const confCheck = document.getElementById('settingShowConfidence');
     if (confCheck) {
         confCheck.addEventListener('change', (e) => {
+            playCricketSound('click');
             savePlatformSettings({ showConfidence: e.target.checked });
+        });
+    }
+
+    const soundCheck = document.getElementById('settingSoundFx');
+    if (soundCheck) {
+        soundCheck.addEventListener('change', (e) => {
+            savePlatformSettings({ soundFx: e.target.checked });
+            if (e.target.checked) playCricketSound('success');
+            showToast(e.target.checked ? 'Sound effects enabled' : 'Sound effects muted', 'info', 2000);
+        });
+    }
+
+    const confettiCheck = document.getElementById('settingConfetti');
+    if (confettiCheck) {
+        confettiCheck.addEventListener('change', (e) => {
+            playCricketSound('click');
+            savePlatformSettings({ confetti: e.target.checked });
+            if (e.target.checked) triggerConfetti();
+        });
+    }
+
+    const testFxBtn = document.getElementById('testFxBtn');
+    if (testFxBtn) {
+        testFxBtn.addEventListener('click', () => {
+            playCricketSound('celebrate');
+            triggerConfetti();
+            showToast('🎉 Audio & Confetti preview playing!', 'success', 2500);
+        });
+    }
+
+    const incognitoCheck = document.getElementById('settingIncognitoMode');
+    if (incognitoCheck) {
+        incognitoCheck.addEventListener('change', (e) => {
+            playCricketSound('click');
+            savePlatformSettings({ incognitoMode: e.target.checked });
+            showToast(e.target.checked ? '🕶️ Incognito analysis enabled' : 'Standard tracking restored', 'info', 2000);
+        });
+    }
+
+    const precisionSelect = document.getElementById('settingPrecision');
+    if (precisionSelect) {
+        precisionSelect.addEventListener('change', (e) => {
+            playCricketSound('click');
+            savePlatformSettings({ precision: e.target.value });
+            showToast('Precision updated', 'info', 2000);
+        });
+    }
+
+    const oversSelect = document.getElementById('settingOversNotation');
+    if (oversSelect) {
+        oversSelect.addEventListener('change', (e) => {
+            playCricketSound('click');
+            savePlatformSettings({ oversNotation: e.target.value });
+            showToast('Overs format updated', 'info', 2000);
         });
     }
 
     const autoSaveCheck = document.getElementById('settingAutoSave');
     if (autoSaveCheck) {
         autoSaveCheck.addEventListener('change', (e) => {
+            playCricketSound('click');
             savePlatformSettings({ autoSaveHistory: e.target.checked });
         });
     }
@@ -793,6 +1010,7 @@ function initSettingsDropdown() {
     const exportJsonBtn = document.getElementById('settingsExportJsonBtn');
     if (exportJsonBtn) {
         exportJsonBtn.addEventListener('click', () => {
+            playCricketSound('click');
             try {
                 const history = JSON.parse(localStorage.getItem('cpp_prediction_history')) || [];
                 const profile = JSON.parse(localStorage.getItem('cricket_predictor_profile')) || {};
@@ -816,6 +1034,7 @@ function initSettingsDropdown() {
     const exportCsvBtn = document.getElementById('settingsExportCsvBtn');
     if (exportCsvBtn) {
         exportCsvBtn.addEventListener('click', () => {
+            playCricketSound('click');
             if (typeof exportHistoryCSV === 'function') exportHistoryCSV();
         });
     }
@@ -824,6 +1043,7 @@ function initSettingsDropdown() {
     const clearHistBtn = document.getElementById('settingsClearHistoryBtn');
     if (clearHistBtn) {
         clearHistBtn.addEventListener('click', () => {
+            playCricketSound('click');
             if (!confirm('Clear all prediction history? This cannot be undone.')) return;
             localStorage.removeItem('cpp_prediction_history');
             updateSettingsModalUI(getPlatformSettings());
@@ -837,6 +1057,7 @@ function initSettingsDropdown() {
     const resetAllBtn = document.getElementById('settingsResetAllBtn');
     if (resetAllBtn) {
         resetAllBtn.addEventListener('click', () => {
+            playCricketSound('click');
             if (!confirm('Reset all preferences to default values?')) return;
             localStorage.removeItem(SETTINGS_KEY);
             localStorage.removeItem('cpp_theme');

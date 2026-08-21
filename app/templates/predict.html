@@ -254,6 +254,16 @@
             }
         }
     });
+
+    // Audio and Confetti trigger
+    if (typeof playCricketSound === 'function') playCricketSound('bat');
+    const bestVal = parseFloat("{{ result.predictions[result.best_model].value if result.best_model and result.predictions[result.best_model] is defined else 0 }}");
+    if (bestVal > 150 && typeof triggerConfetti === 'function') {
+        setTimeout(() => {
+            triggerConfetti();
+            if (typeof playCricketSound === 'function') playCricketSound('celebrate');
+        }, 350);
+    }
 </script>
 {% endif %}
 {% endblock %}

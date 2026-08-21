@@ -148,9 +148,13 @@
                         <span class="tab-icon">🏏</span>
                         <span class="tab-label" data-i18n="settings.tabCricket">Prediction Defaults</span>
                     </button>
-                    <button class="settings-tab-btn" data-tab="tab-storage" role="tab" aria-selected="false">
-                        <span class="tab-icon">💾</span>
-                        <span class="tab-label" data-i18n="settings.tabStorage">Data & Storage</span>
+                    <button class="settings-tab-btn" data-tab="tab-audio" role="tab" aria-selected="false">
+                        <span class="tab-icon">🎵</span>
+                        <span class="tab-label" data-i18n="settings.tabAudio">Audio & FX</span>
+                    </button>
+                    <button class="settings-tab-btn" data-tab="tab-privacy" role="tab" aria-selected="false">
+                        <span class="tab-icon">🔒</span>
+                        <span class="tab-label" data-i18n="settings.tabPrivacy">Privacy & Storage</span>
                     </button>
                     <button class="settings-tab-btn" data-tab="tab-system" role="tab" aria-selected="false">
                         <span class="tab-icon">ℹ️</span>
@@ -187,6 +191,19 @@
                                 <button type="button" class="settings-seg-btn active" id="modalThemeDark" data-theme-val="dark">🌙 Dark</button>
                                 <button type="button" class="settings-seg-btn" id="modalThemeLight" data-theme-val="light">☀️ Light</button>
                             </div>
+                        </div>
+
+                        <!-- Decimal Precision -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.precisionTitle">Decimal Precision</div>
+                                <div class="settings-item-desc" data-i18n="settings.precisionDesc">Number of decimal digits shown for scores and metrics.</div>
+                            </div>
+                            <select id="settingPrecision" class="settings-select">
+                                <option value="1">1 Decimal (e.g. 8.5)</option>
+                                <option value="2" selected>2 Decimals (e.g. 8.50)</option>
+                                <option value="0">Rounded Integer (e.g. 9)</option>
+                            </select>
                         </div>
 
                         <!-- Compact Mode -->
@@ -246,6 +263,18 @@
                             </select>
                         </div>
 
+                        <!-- Overs Notation -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.oversFormatTitle">Overs Display Notation</div>
+                                <div class="settings-item-desc" data-i18n="settings.oversFormatDesc">Switch between traditional overs (19.4 Ov) and ball counts (118 Balls).</div>
+                            </div>
+                            <select id="settingOversNotation" class="settings-select">
+                                <option value="overs" selected>Traditional (19.4 Ov)</option>
+                                <option value="balls">Total Balls (118 Balls)</option>
+                            </select>
+                        </div>
+
                         <!-- Confidence Intervals (±MAE) -->
                         <div class="settings-item-card">
                             <div class="settings-item-info">
@@ -254,6 +283,61 @@
                             </div>
                             <label class="settings-switch">
                                 <input type="checkbox" id="settingShowConfidence" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Audio & Celebrations -->
+                    <div class="settings-panel" id="tab-audio" role="tabpanel" style="display:none;">
+                        <h3 class="panel-section-title" data-i18n="settings.audioHeading">Sound Effects & Celebrations</h3>
+
+                        <!-- Sound FX Toggle -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.soundFxTitle">UI & Prediction Sound Effects</div>
+                                <div class="settings-item-desc" data-i18n="settings.soundFxDesc">Play subtle audio cues when running predictions and clicking actions.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingSoundFx" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Milestone Confetti -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.confettiTitle">Milestone Confetti Celebration</div>
+                                <div class="settings-item-desc" data-i18n="settings.confettiDesc">Trigger celebratory confetti animations when high target scores are predicted.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingConfetti" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Test Sound & Confetti Button -->
+                        <div class="settings-item-card" style="background: rgba(74, 222, 128, 0.06); border-color: rgba(74, 222, 128, 0.2);">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title">🎉 Preview Audio & Confetti</div>
+                                <div class="settings-item-desc">Test your audio feedback and celebration effects right here.</div>
+                            </div>
+                            <button type="button" id="testFxBtn" class="btn btn-sm btn-primary">⚡ Test FX</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Privacy & Storage -->
+                    <div class="settings-panel" id="tab-privacy" role="tabpanel" style="display:none;">
+                        <h3 class="panel-section-title" data-i18n="settings.privacyHeading">Privacy & Local Storage</h3>
+
+                        <!-- Incognito Mode -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.incognitoTitle">Incognito / Ghost Analysis Mode</div>
+                                <div class="settings-item-desc" data-i18n="settings.incognitoDesc">Prevent any prediction data from being written to browser storage.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingIncognitoMode">
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -269,11 +353,6 @@
                                 <span class="slider"></span>
                             </label>
                         </div>
-                    </div>
-
-                    <!-- Tab 3: Data & Storage -->
-                    <div class="settings-panel" id="tab-storage" role="tabpanel" style="display:none;">
-                        <h3 class="panel-section-title" data-i18n="settings.storageHeading">Local Data & Backup</h3>
 
                         <!-- Stored Predictions Stats -->
                         <div class="settings-item-card">
@@ -298,7 +377,7 @@
                         </div>
                     </div>
 
-                    <!-- Tab 4: System & Diagnostics -->
+                    <!-- Tab 5: System & Diagnostics -->
                     <div class="settings-panel" id="tab-system" role="tabpanel" style="display:none;">
                         <h3 class="panel-section-title" data-i18n="settings.systemHeading">System Health & Diagnostic</h3>
 
