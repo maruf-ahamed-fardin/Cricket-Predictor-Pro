@@ -1,0 +1,31 @@
+{
+  "name": "Cricket Predictor Pro",
+  "short_name": "Cricket Pro",
+  "description": "AI-powered cricket statistics prediction for T10, T20, ODI, and Test formats.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/static/img/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["sports", "utilities"],
+  "shortcuts": [
+    { "name": "Predict T20",   "url": "/predict/t20",    "description": "T20 prediction" },
+    { "name": "Compare Models","url": "/compare",         "description": "Model comparison" },
+    { "name": "Simulate",      "url": "/simulate/t20",   "description": "Over-by-over simulator" },
+    { "name": "History",       "url": "/history",         "description": "Prediction history" }
+  ]
+}

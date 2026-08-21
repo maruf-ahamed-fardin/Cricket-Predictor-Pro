@@ -1,0 +1,23 @@
+{
+  "nav.home":       "হোম",
+  "nav.formats":    "ফরম্যাট ▾",
+  "nav.compare":    "তুলনা",
+  "nav.simulate":   "সিমুলেট",
+  "nav.about":      "সম্পর্কে",
+  "nav.history":    "ইতিহাস",
+  "nav.profile":    "প্রোফাইল",
+  "footer.brand":   "ক্রিকেট প্রেডিক্টর প্রো",
+  "footer.desc":    "AI-চালিত ক্রিকেট পূর্বাভাস · লিনিয়ার রিগ্রেশন · গ্রেডিয়েন্ট বুস্টিং · পলিনোমিয়াল রিগ্রেশন",
+  "predict.format": "ফরম্যাট",
+  "predict.target": "টার্গেট",
+  "predict.inputTitle":    "📝 ইনপুট বৈশিষ্ট্য",
+  "predict.inputSubtitle": "পূর্বাভাস পেতে ম্যাচের অবস্থা লিখুন",
+  "predict.btnPredict":    "🔮 তিনটি মডেল দিয়ে পূর্বাভাস করুন",
+  "predict.resultsTitle":  "📊 পূর্বাভাসের ফলাফল",
+  "predict.emptyTitle":    "এখনও কোনো পূর্বাভাস নেই",
+  "predict.emptyDesc":     "বৈশিষ্ট্য পূরণ করুন এবং \"পূর্বাভাস\" ক্লিক করুন।",
+  "about.title":    "কীভাবে কাজ করে",
+  "about.subtitle": "ML মডেল, বৈশিষ্ট্য ও মেট্রিক্সের সহজ ব্যাখ্যা।",
+  "history.title":    "পূর্বাভাসের ইতিহাস",
+  "history.subtitle": "আপনার শেষ ৫০টি পূর্বাভাস — ব্রাউজারে সংরক্ষিত।"
+}

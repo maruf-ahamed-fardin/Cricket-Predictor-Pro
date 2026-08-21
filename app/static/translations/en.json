@@ -1,0 +1,23 @@
+{
+  "nav.home":       "Home",
+  "nav.formats":    "Formats ▾",
+  "nav.compare":    "Compare",
+  "nav.simulate":   "Simulate",
+  "nav.about":      "About",
+  "nav.history":    "History",
+  "nav.profile":    "Profile",
+  "footer.brand":   "Cricket Predictor Pro",
+  "footer.desc":    "AI-powered cricket prediction · Linear Regression · Gradient Boosting · Polynomial Regression",
+  "predict.format": "Format",
+  "predict.target": "Target",
+  "predict.inputTitle":    "📝 Input Features",
+  "predict.inputSubtitle": "Enter match conditions to get predictions",
+  "predict.btnPredict":    "🔮 Predict with All 3 Models",
+  "predict.resultsTitle":  "📊 Prediction Results",
+  "predict.emptyTitle":    "No Predictions Yet",
+  "predict.emptyDesc":     "Fill in the features and click \"Predict\" to see results from all 3 models.",
+  "about.title":    "How It Works",
+  "about.subtitle": "A plain-English guide to the ML models, features, and metrics.",
+  "history.title":    "Prediction History",
+  "history.subtitle": "Your last 50 predictions — stored locally in your browser."
+}
