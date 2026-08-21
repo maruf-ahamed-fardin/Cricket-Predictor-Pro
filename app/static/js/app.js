@@ -77,10 +77,14 @@ function initThemeToggle() {
     const btn = document.getElementById('themeToggle');
     if (!btn) return;
     btn.addEventListener('click', () => {
-        const html = document.documentElement;
-        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', next);
-        localStorage.setItem('cpp_theme', next);
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        if (typeof savePlatformSettings === 'function') {
+            savePlatformSettings({ theme: next });
+        } else {
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('cpp_theme', next);
+        }
     });
 }
 
@@ -261,6 +265,9 @@ const MAX_HISTORY = 50;
 
 window.savePredictionToHistory = function(entry) {
     try {
+        if (typeof getPlatformSettings === 'function' && getPlatformSettings().autoSaveHistory === false) {
+            return;
+        }
         const history = getPredictionHistory();
         history.unshift({ ...entry, id: Date.now(), timestamp: new Date().toISOString() });
         if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
@@ -532,32 +539,313 @@ async function loadLanguage(lang) {
     }
 }
 
+/* ─── Platform Preferences & Settings System ──────────────────────────────── */
+
+const SETTINGS_KEY = 'cpp_platform_settings';
+
+const DEFAULT_SETTINGS = {
+    lang: 'en',
+    theme: 'dark',
+    compact: false,
+    animations: true,
+    defaultFormat: 't20',
+    defaultModel: 'best',
+    showConfidence: true,
+    autoSaveHistory: true,
+};
+
+window.getPlatformSettings = function() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+        return {
+            ...DEFAULT_SETTINGS,
+            ...saved,
+            lang: localStorage.getItem('cpp_lang') || saved.lang || DEFAULT_SETTINGS.lang,
+            theme: localStorage.getItem('cpp_theme') || saved.theme || DEFAULT_SETTINGS.theme,
+        };
+    } catch {
+        return { ...DEFAULT_SETTINGS };
+    }
+};
+
+window.savePlatformSettings = function(settings) {
+    try {
+        const current = getPlatformSettings();
+        const updated = { ...current, ...settings };
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+        if (settings.theme) localStorage.setItem('cpp_theme', settings.theme);
+        if (settings.lang) localStorage.setItem('cpp_lang', settings.lang);
+        applyPlatformSettings(updated);
+        return updated;
+    } catch (e) {
+        console.warn('Failed saving settings:', e);
+    }
+};
+
+window.applyPlatformSettings = function(settings) {
+    const s = settings || getPlatformSettings();
+
+    // 1. Theme
+    if (s.theme) {
+        document.documentElement.setAttribute('data-theme', s.theme);
+    }
+
+    // 2. Compact density mode
+    document.body.classList.toggle('compact-mode', !!s.compact);
+
+    // 3. Motion / Animations
+    document.body.classList.toggle('reduce-motion', !s.animations);
+    const heroVid = document.querySelector('.hero-video');
+    if (heroVid) {
+        if (!s.animations) heroVid.pause();
+        else heroVid.play().catch(() => {});
+    }
+
+    // 4. Confidence intervals display
+    document.querySelectorAll('.confidence-chip, .confidence-range').forEach(el => {
+        el.style.display = s.showConfidence ? '' : 'none';
+    });
+
+    // 5. Update settings UI elements
+    updateSettingsModalUI(s);
+};
+
+function updateSettingsModalUI(s) {
+    // Language buttons
+    document.querySelectorAll('[data-lang]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === s.lang);
+    });
+
+    // Theme buttons
+    document.querySelectorAll('[data-theme-val]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeVal === s.theme);
+    });
+
+    // Checkboxes
+    const compactCheck = document.getElementById('settingCompactMode');
+    if (compactCheck) compactCheck.checked = !!s.compact;
+
+    const animCheck = document.getElementById('settingAnimations');
+    if (animCheck) animCheck.checked = s.animations !== false;
+
+    const confCheck = document.getElementById('settingShowConfidence');
+    if (confCheck) confCheck.checked = s.showConfidence !== false;
+
+    const autoSaveCheck = document.getElementById('settingAutoSave');
+    if (autoSaveCheck) autoSaveCheck.checked = s.autoSaveHistory !== false;
+
+    // Selects
+    const fmtSelect = document.getElementById('settingDefaultFormat');
+    if (fmtSelect && s.defaultFormat) fmtSelect.value = s.defaultFormat;
+
+    const modelSelect = document.getElementById('settingDefaultModel');
+    if (modelSelect && s.defaultModel) modelSelect.value = s.defaultModel;
+
+    // Stored predictions count
+    const historyDesc = document.getElementById('settingsHistoryCountDesc');
+    if (historyDesc) {
+        try {
+            const h = JSON.parse(localStorage.getItem('cpp_prediction_history')) || [];
+            historyDesc.textContent = `${h.length} predictions currently stored in browser localStorage.`;
+        } catch {}
+    }
+}
+
 function initSettingsDropdown() {
     const trigger = document.getElementById('settingsDropdownTrigger');
     const dropdown = trigger?.closest('.nav-settings-dropdown');
-    if (!trigger || !dropdown) return;
+    const modalBackdrop = document.getElementById('settingsModalBackdrop');
+    const openModalBtn = document.getElementById('openSettingsModalBtn');
+    const closeModalBtn = document.getElementById('settingsModalCloseBtn');
+    const doneModalBtn = document.getElementById('settingsModalDoneBtn');
 
-    trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = dropdown.classList.toggle('dropdown-open');
-        trigger.setAttribute('aria-expanded', isOpen);
+    // Apply settings on initial load
+    applyPlatformSettings();
+
+    // Toggle quick settings popover
+    if (trigger && dropdown) {
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = dropdown.classList.toggle('dropdown-open');
+            trigger.setAttribute('aria-expanded', isOpen);
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('dropdown-open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Open full modal
+    function openModal() {
+        if (!modalBackdrop) return;
+        dropdown?.classList.remove('dropdown-open');
+        modalBackdrop.style.display = 'flex';
+        requestAnimationFrame(() => modalBackdrop.classList.add('modal-open'));
+        updateSettingsModalUI(getPlatformSettings());
+    }
+
+    function closeModal() {
+        if (!modalBackdrop) return;
+        modalBackdrop.classList.remove('modal-open');
+        setTimeout(() => { modalBackdrop.style.display = 'none'; }, 250);
+    }
+
+    if (openModalBtn) openModalBtn.addEventListener('click', openModal);
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    if (doneModalBtn) doneModalBtn.addEventListener('click', closeModal);
+
+    modalBackdrop?.addEventListener('click', (e) => {
+        if (e.target === modalBackdrop) closeModal();
     });
 
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target)) {
-            dropdown.classList.remove('dropdown-open');
-            trigger.setAttribute('aria-expanded', 'false');
-        }
-    });
-
-    // Close on Escape key
+    // Keyboard shortcut (Ctrl + , or Esc)
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            dropdown.classList.remove('dropdown-open');
-            trigger.setAttribute('aria-expanded', 'false');
+        if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+            e.preventDefault();
+            if (modalBackdrop?.classList.contains('modal-open')) closeModal();
+            else openModal();
+        } else if (e.key === 'Escape') {
+            closeModal();
+            dropdown?.classList.remove('dropdown-open');
         }
     });
+
+    // Modal Tabs Navigation
+    document.querySelectorAll('.settings-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.dataset.tab;
+            document.querySelectorAll('.settings-tab-btn').forEach(b => {
+                const isActive = b === btn;
+                b.classList.toggle('active', isActive);
+                b.setAttribute('aria-selected', isActive);
+            });
+            document.querySelectorAll('.settings-panel').forEach(panel => {
+                if (panel.id === targetTab) {
+                    panel.style.display = 'block';
+                    panel.classList.add('active');
+                } else {
+                    panel.style.display = 'none';
+                    panel.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // Modal Settings Controls
+    document.querySelectorAll('[data-theme-val]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            savePlatformSettings({ theme: btn.dataset.themeVal });
+            showToast(`Theme set to ${btn.dataset.themeVal}`, 'info', 2000);
+        });
+    });
+
+    const compactCheck = document.getElementById('settingCompactMode');
+    if (compactCheck) {
+        compactCheck.addEventListener('change', (e) => {
+            savePlatformSettings({ compact: e.target.checked });
+            showToast(e.target.checked ? 'Compact mode enabled' : 'Compact mode disabled', 'info', 2000);
+        });
+    }
+
+    const animCheck = document.getElementById('settingAnimations');
+    if (animCheck) {
+        animCheck.addEventListener('change', (e) => {
+            savePlatformSettings({ animations: e.target.checked });
+            showToast(e.target.checked ? 'Animations & video enabled' : 'Reduced motion enabled', 'info', 2000);
+        });
+    }
+
+    const fmtSelect = document.getElementById('settingDefaultFormat');
+    if (fmtSelect) {
+        fmtSelect.addEventListener('change', (e) => {
+            savePlatformSettings({ defaultFormat: e.target.value });
+            showToast(`Default format set to ${e.target.value.toUpperCase()}`, 'success', 2000);
+        });
+    }
+
+    const modelSelect = document.getElementById('settingDefaultModel');
+    if (modelSelect) {
+        modelSelect.addEventListener('change', (e) => {
+            savePlatformSettings({ defaultModel: e.target.value });
+            showToast(`Model priority updated`, 'success', 2000);
+        });
+    }
+
+    const confCheck = document.getElementById('settingShowConfidence');
+    if (confCheck) {
+        confCheck.addEventListener('change', (e) => {
+            savePlatformSettings({ showConfidence: e.target.checked });
+        });
+    }
+
+    const autoSaveCheck = document.getElementById('settingAutoSave');
+    if (autoSaveCheck) {
+        autoSaveCheck.addEventListener('change', (e) => {
+            savePlatformSettings({ autoSaveHistory: e.target.checked });
+        });
+    }
+
+    // JSON Export in modal
+    const exportJsonBtn = document.getElementById('settingsExportJsonBtn');
+    if (exportJsonBtn) {
+        exportJsonBtn.addEventListener('click', () => {
+            try {
+                const history = JSON.parse(localStorage.getItem('cpp_prediction_history')) || [];
+                const profile = JSON.parse(localStorage.getItem('cricket_predictor_profile')) || {};
+                const settings = getPlatformSettings();
+                const bundle = { exportDate: new Date().toISOString(), history, profile, settings };
+                const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `cricket_predictor_pro_backup_${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('All data exported as JSON.', 'success');
+            } catch (e) {
+                showToast('Failed to export data.', 'error');
+            }
+        });
+    }
+
+    // CSV Export in modal
+    const exportCsvBtn = document.getElementById('settingsExportCsvBtn');
+    if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+            if (typeof exportHistoryCSV === 'function') exportHistoryCSV();
+        });
+    }
+
+    // Clear history in modal
+    const clearHistBtn = document.getElementById('settingsClearHistoryBtn');
+    if (clearHistBtn) {
+        clearHistBtn.addEventListener('click', () => {
+            if (!confirm('Clear all prediction history? This cannot be undone.')) return;
+            localStorage.removeItem('cpp_prediction_history');
+            updateSettingsModalUI(getPlatformSettings());
+            const container = document.getElementById('historyContainer');
+            if (container && typeof renderHistory === 'function') renderHistory(container);
+            showToast('Prediction history cleared.', 'info');
+        });
+    }
+
+    // Reset Defaults in modal
+    const resetAllBtn = document.getElementById('settingsResetAllBtn');
+    if (resetAllBtn) {
+        resetAllBtn.addEventListener('click', () => {
+            if (!confirm('Reset all preferences to default values?')) return;
+            localStorage.removeItem(SETTINGS_KEY);
+            localStorage.removeItem('cpp_theme');
+            localStorage.removeItem('cpp_lang');
+            applyPlatformSettings(DEFAULT_SETTINGS);
+            loadLanguage('en');
+            showToast('All settings reset to defaults.', 'info');
+        });
+    }
 }
 
 function applyTranslations(t) {

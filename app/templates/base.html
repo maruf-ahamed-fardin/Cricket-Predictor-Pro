@@ -79,7 +79,7 @@
                         <span class="settings-gear-icon">⚙️</span>
                     </button>
                     <div class="dropdown-menu settings-menu" id="settingsMenu" role="menu">
-                        <div class="settings-menu-header" data-i18n="settings.title">Settings</div>
+                        <div class="settings-menu-header" data-i18n="settings.title">Quick Settings</div>
                         
                         <!-- Language Option -->
                         <div class="settings-row">
@@ -99,9 +99,16 @@
                                 <span id="themeRowIcon">🌙</span>
                                 <span data-i18n="settings.theme">Theme</span>
                             </div>
-                            <button type="button" class="settings-theme-btn" id="themeToggle" aria-label="Toggle dark/light mode">
-                                <span class="theme-icon theme-icon-dark" data-i18n="settings.dark">🌙 Dark</span>
-                                <span class="theme-icon theme-icon-light" data-i18n="settings.light">☀️ Light</span>
+                            <div class="settings-theme-switcher">
+                                <button type="button" class="theme-opt-btn active" id="quickThemeDark" data-theme-val="dark" data-i18n="settings.dark">🌙 Dark</button>
+                                <button type="button" class="theme-opt-btn" id="quickThemeLight" data-theme-val="light" data-i18n="settings.light">☀️ Light</button>
+                            </div>
+                        </div>
+
+                        <!-- More Settings Button -->
+                        <div class="settings-menu-footer">
+                            <button type="button" class="settings-open-modal-btn" id="openSettingsModalBtn" data-i18n="settings.openModal">
+                                ⚙️ More Preferences...
                             </button>
                         </div>
                     </div>
@@ -116,6 +123,225 @@
             </button>
         </div>
     </nav>
+
+    <!-- Full Settings Modal Dialog -->
+    <div class="settings-modal-backdrop" id="settingsModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle" style="display:none;">
+        <div class="settings-modal glass-card">
+            <!-- Modal Header -->
+            <div class="settings-modal-header">
+                <div class="settings-modal-title-wrap">
+                    <span class="settings-modal-icon">⚙️</span>
+                    <h2 id="settingsModalTitle" class="settings-modal-title" data-i18n="settings.modalTitle">Platform Preferences</h2>
+                </div>
+                <button class="settings-modal-close" id="settingsModalCloseBtn" aria-label="Close settings">✕</button>
+            </div>
+
+            <!-- Modal Body: Tabs + Content Panels -->
+            <div class="settings-modal-body">
+                <!-- Sidebar Tabs -->
+                <div class="settings-tabs-sidebar" role="tablist">
+                    <button class="settings-tab-btn active" data-tab="tab-general" role="tab" aria-selected="true">
+                        <span class="tab-icon">🌐</span>
+                        <span class="tab-label" data-i18n="settings.tabGeneral">General & Display</span>
+                    </button>
+                    <button class="settings-tab-btn" data-tab="tab-cricket" role="tab" aria-selected="false">
+                        <span class="tab-icon">🏏</span>
+                        <span class="tab-label" data-i18n="settings.tabCricket">Prediction Defaults</span>
+                    </button>
+                    <button class="settings-tab-btn" data-tab="tab-storage" role="tab" aria-selected="false">
+                        <span class="tab-icon">💾</span>
+                        <span class="tab-label" data-i18n="settings.tabStorage">Data & Storage</span>
+                    </button>
+                    <button class="settings-tab-btn" data-tab="tab-system" role="tab" aria-selected="false">
+                        <span class="tab-icon">ℹ️</span>
+                        <span class="tab-label" data-i18n="settings.tabSystem">System & Info</span>
+                    </button>
+                </div>
+
+                <!-- Content Area -->
+                <div class="settings-content-area">
+                    
+                    <!-- Tab 1: General & Display -->
+                    <div class="settings-panel active" id="tab-general" role="tabpanel">
+                        <h3 class="panel-section-title" data-i18n="settings.appearanceHeading">Appearance & Interface</h3>
+                        
+                        <!-- Language -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.languageTitle">Interface Language</div>
+                                <div class="settings-item-desc" data-i18n="settings.languageDesc">Choose between English and Bengali across all pages.</div>
+                            </div>
+                            <div class="settings-segmented-group" id="modalLangGroup">
+                                <button type="button" class="settings-seg-btn active" id="modalLangEn" data-lang="en">English (EN)</button>
+                                <button type="button" class="settings-seg-btn" id="modalLangBn" data-lang="bn">বাংলা (BN)</button>
+                            </div>
+                        </div>
+
+                        <!-- Theme -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.themeTitle">Color Theme</div>
+                                <div class="settings-item-desc" data-i18n="settings.themeDesc">Choose your preferred lighting mode.</div>
+                            </div>
+                            <div class="settings-segmented-group" id="modalThemeGroup">
+                                <button type="button" class="settings-seg-btn active" id="modalThemeDark" data-theme-val="dark">🌙 Dark</button>
+                                <button type="button" class="settings-seg-btn" id="modalThemeLight" data-theme-val="light">☀️ Light</button>
+                            </div>
+                        </div>
+
+                        <!-- Compact Mode -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.compactTitle">Compact Density Mode</div>
+                                <div class="settings-item-desc" data-i18n="settings.compactDesc">Reduce padding for denser data display on wide screens.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingCompactMode">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Hero Video / Motion -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.motionTitle">Hero Video & Animations</div>
+                                <div class="settings-item-desc" data-i18n="settings.motionDesc">Enable cinematic background videos and rich transitions.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingAnimations" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Prediction Defaults -->
+                    <div class="settings-panel" id="tab-cricket" role="tabpanel" style="display:none;">
+                        <h3 class="panel-section-title" data-i18n="settings.cricketHeading">Prediction & Model Defaults</h3>
+
+                        <!-- Default Format -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.defaultFormatTitle">Default Cricket Format</div>
+                                <div class="settings-item-desc" data-i18n="settings.defaultFormatDesc">Initial format selected when launching predictions.</div>
+                            </div>
+                            <select id="settingDefaultFormat" class="settings-select">
+                                <option value="t20">🔥 T20 (Twenty20)</option>
+                                <option value="odi">🏆 ODI (One Day)</option>
+                                <option value="t10">⚡ T10 (Ten10)</option>
+                                <option value="test">🏛️ Test Match</option>
+                            </select>
+                        </div>
+
+                        <!-- Preferred Model Highlight -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.defaultModelTitle">Highlight Preferred Model</div>
+                                <div class="settings-item-desc" data-i18n="settings.defaultModelDesc">Select model to emphasize in multi-model results.</div>
+                            </div>
+                            <select id="settingDefaultModel" class="settings-select">
+                                <option value="best">🏆 Auto Recommend (Lowest MAE)</option>
+                                <option value="Gradient Boosting">🌲 Gradient Boosting (Ensemble)</option>
+                                <option value="Linear Regression">⚡ Linear Regression (Fast/Baseline)</option>
+                                <option value="Polynomial Regression">🧮 Polynomial Regression (Interactions)</option>
+                            </select>
+                        </div>
+
+                        <!-- Confidence Intervals (±MAE) -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.showConfidenceTitle">Confidence Intervals (±MAE)</div>
+                                <div class="settings-item-desc" data-i18n="settings.showConfidenceDesc">Display uncertainty ranges and error bands on predictions.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingShowConfidence" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Auto-Save History -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.autoSaveTitle">Auto-Save History</div>
+                                <div class="settings-item-desc" data-i18n="settings.autoSaveDesc">Automatically store prediction outputs in browser history.</div>
+                            </div>
+                            <label class="settings-switch">
+                                <input type="checkbox" id="settingAutoSave" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Data & Storage -->
+                    <div class="settings-panel" id="tab-storage" role="tabpanel" style="display:none;">
+                        <h3 class="panel-section-title" data-i18n="settings.storageHeading">Local Data & Backup</h3>
+
+                        <!-- Stored Predictions Stats -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.historyStatsTitle">Stored Predictions</div>
+                                <div class="settings-item-desc" id="settingsHistoryCountDesc">0 predictions currently stored in browser localStorage.</div>
+                            </div>
+                            <div class="settings-btn-group">
+                                <button type="button" id="settingsExportJsonBtn" class="btn btn-sm btn-outline">💾 JSON</button>
+                                <button type="button" id="settingsExportCsvBtn" class="btn btn-sm btn-outline">📊 CSV</button>
+                                <button type="button" id="settingsClearHistoryBtn" class="btn btn-sm btn-outline danger-btn">🗑️ Clear</button>
+                            </div>
+                        </div>
+
+                        <!-- Reset Preferences -->
+                        <div class="settings-item-card">
+                            <div class="settings-item-info">
+                                <div class="settings-item-title" data-i18n="settings.resetTitle">Reset All Preferences</div>
+                                <div class="settings-item-desc" data-i18n="settings.resetDesc">Revert all themes, formats, and view settings to default.</div>
+                            </div>
+                            <button type="button" id="settingsResetAllBtn" class="btn btn-sm btn-outline">🔄 Reset Defaults</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: System & Diagnostics -->
+                    <div class="settings-panel" id="tab-system" role="tabpanel" style="display:none;">
+                        <h3 class="panel-section-title" data-i18n="settings.systemHeading">System Health & Diagnostic</h3>
+
+                        <div class="settings-diagnostics-grid">
+                            <div class="diag-card">
+                                <div class="diag-badge status-ok">🟢 ONLINE</div>
+                                <div class="diag-title">72 ML Models</div>
+                                <div class="diag-desc">3 algorithms × 6 targets × 4 formats</div>
+                            </div>
+                            <div class="diag-card">
+                                <div class="diag-badge status-ok">🟢 READY</div>
+                                <div class="diag-title">REST API v2.0</div>
+                                <div class="diag-desc">OpenAPI spec mounted at /api/docs</div>
+                            </div>
+                            <div class="diag-card">
+                                <div class="diag-badge status-ok">🟢 ACTIVE</div>
+                                <div class="diag-title">Progressive Web App</div>
+                                <div class="diag-desc">Offline cache & Service Worker active</div>
+                            </div>
+                            <div class="diag-card">
+                                <div class="diag-badge status-ok">🟢 SECURE</div>
+                                <div class="diag-title">Security Headers</div>
+                                <div class="diag-desc">CSP, FrameOptions & XSS hardened</div>
+                            </div>
+                        </div>
+
+                        <div class="settings-quick-links">
+                            <a href="/profile" class="btn btn-outline btn-sm">👤 My Profile & Avatar</a>
+                            <a href="/api/docs" class="btn btn-outline btn-sm">📖 REST API Reference</a>
+                            <a href="/about" class="btn btn-outline btn-sm">ℹ️ Model Architecture</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="settings-modal-footer">
+                <span class="settings-save-notice" id="settingsSaveNotice" data-i18n="settings.savedNotice">✓ All changes saved automatically</span>
+                <button class="btn btn-primary btn-sm" id="settingsModalDoneBtn" data-i18n="settings.done">Done</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast Container (populated by JS) -->
     <div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
