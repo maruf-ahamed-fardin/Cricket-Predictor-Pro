@@ -208,3 +208,34 @@ class CricketPredictor:
             "middle_overs_runs": "Middle Overs Runs",
             "total_innings_runs": "Total Innings Runs",
         }
+
+    def get_feature_ranges(self, fmt: str, target_key: str) -> dict:
+        """
+        Return per-feature min/max/step/unit hints for the prediction form.
+        Used to power real-time input validation and range hints in the UI.
+        """
+        cfg = FORMAT_CONFIG.get(fmt, FORMAT_CONFIG["t20"])
+        max_ov = cfg["max_overs"]
+        sr = cfg["total_score_range"]
+
+        base_ranges = {
+            "over_number":        {"min": 1,   "max": max_ov,          "step": 1,    "unit": "over"},
+            "wickets_fallen":     {"min": 0,   "max": 9,               "step": 1,    "unit": "wkts"},
+            "batsman_avg":        {"min": 5,   "max": 80,              "step": 0.1,  "unit": "avg"},
+            "bowler_econ":        {"min": 1.0, "max": 18.0,            "step": 0.1,  "unit": "rpo"},
+            "strike_rate":        {"min": 20,  "max": 250,             "step": 0.1,  "unit": "sr"},
+            "match_phase":        {"min": 0,   "max": 2,               "step": 1,    "unit": ""},
+            "overs_played":       {"min": 1,   "max": max_ov,          "step": 1,    "unit": "ovs"},
+            "wickets_lost":       {"min": 0,   "max": 10,              "step": 1,    "unit": "wkts"},
+            "avg_batting_avg":    {"min": 10,  "max": 70,              "step": 0.1,  "unit": "avg"},
+            "avg_bowling_avg":    {"min": 10,  "max": 70,              "step": 0.1,  "unit": "avg"},
+            "avg_strike_rate":    {"min": 20,  "max": 220,             "step": 0.1,  "unit": "sr"},
+            "avg_economy":        {"min": 1.0, "max": 16.0,            "step": 0.1,  "unit": "rpo"},
+            "powerplay_runs":     {"min": 0,   "max": cfg["powerplay_end"] * 12, "step": 1, "unit": "runs"},
+            "middle_overs_runs":  {"min": 0,   "max": (cfg["death_over_start"] - cfg["powerplay_end"]) * 10, "step": 1, "unit": "runs"},
+            "total_innings_runs": {"min": sr[0] - 40, "max": sr[1] + 80, "step": 1, "unit": "runs"},
+        }
+
+        target_info = PREDICTION_TARGETS.get(target_key, {})
+        feature_cols = target_info.get("feature_cols", [])
+        return {col: base_ranges[col] for col in feature_cols if col in base_ranges}

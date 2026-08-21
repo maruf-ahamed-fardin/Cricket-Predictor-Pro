@@ -1,6 +1,6 @@
 """
 Cricket Predictor Pro — Flask Application Factory
-Production-ready with logging, error handlers, and env config.
+Production-ready with logging, error handlers, security headers, and env config.
 """
 
 import os
@@ -24,6 +24,7 @@ def create_app() -> Flask:
     # ── Config ────────────────────────────────────────────────────────────────
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "cricket-predictor-pro-dev-key")
     app.config["DEBUG"] = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+    app.config["ADMIN_KEY"] = os.getenv("ADMIN_KEY", "change-this-admin-key")
 
     # ── Logging ───────────────────────────────────────────────────────────────
     _configure_logging(app)
@@ -37,6 +38,41 @@ def create_app() -> Flask:
     # ── Register blueprints ───────────────────────────────────────────────────
     from app.routes.predict import predict_bp
     app.register_blueprint(predict_bp)
+
+    from app.routes.admin import admin_bp
+    app.register_blueprint(admin_bp)
+
+    # ── Security headers (after every response) ───────────────────────────────
+    @app.after_request
+    def set_security_headers(response):
+        # Prevent clickjacking
+        response.headers["X-Frame-Options"] = "SAMEORIGIN"
+        # Prevent MIME sniffing
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        # Legacy XSS filter
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        # Referrer privacy
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        # Restrict browser features
+        response.headers["Permissions-Policy"] = (
+            "geolocation=(), microphone=(), camera=(), payment=()"
+        )
+        # Content Security Policy — allows CDN fonts, Chart.js, Google Fonts
+        csp = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: blob:; "
+            "connect-src 'self'; "
+            "media-src 'self'; "
+            "frame-src 'none';"
+        )
+        response.headers["Content-Security-Policy"] = csp
+        # Remove server fingerprint
+        response.headers.pop("Server", None)
+        response.headers.pop("X-Powered-By", None)
+        return response
 
     # ── Error handlers ────────────────────────────────────────────────────────
     @app.errorhandler(404)
@@ -63,6 +99,18 @@ def create_app() -> Flask:
             message="An internal error occurred. Please try again.",
             emoji="🚨",
         ), 500
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return render_template(
+            "error.html",
+            formats=FORMAT_CONFIG,
+            targets=PREDICTION_TARGETS,
+            code=403,
+            title="Forbidden",
+            message="You don't have permission to access this page.",
+            emoji="🔒",
+        ), 403
 
     # ── Health check ──────────────────────────────────────────────────────────
     @app.route("/health")
