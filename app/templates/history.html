@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Prediction History — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section history-section">
+    <div class="section-container">
+
+        <div class="section-header">
+            <span class="section-badge">📋 History</span>
+            <h1 class="section-title" data-i18n="history.title">Prediction History</h1>
+            <p class="section-subtitle" data-i18n="history.subtitle">
+                Your last 50 predictions — stored locally in your browser.
+            </p>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="history-action-bar glass-card">
+            <div class="history-stats-row" id="historyStats">
+                <!-- Filled by JS -->
+            </div>
+            <div class="history-buttons">
+                <button id="exportHistoryCsvBtn" class="btn btn-outline btn-sm" aria-label="Export history as CSV">
+                    📥 Export CSV
+                </button>
+                <button id="clearHistoryBtn" class="btn btn-outline btn-sm danger-btn" aria-label="Clear all history">
+                    🗑️ Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- History Cards -->
+        <div id="historyContainer">
+            <!-- Populated by app.js initHistoryPage() -->
+            <div class="results-empty">
+                <div class="empty-icon">📋</div>
+                <h3>Loading…</h3>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Populate stats bar
+    document.addEventListener('DOMContentLoaded', () => {
+        const history = (() => { try { return JSON.parse(localStorage.getItem('cpp_prediction_history')) || []; } catch { return []; } })();
+        const statsEl = document.getElementById('historyStats');
+        if (!statsEl) return;
+        const formats = [...new Set(history.map(e => e.format))].length;
+        statsEl.innerHTML = `
+            <span class="history-stat"><strong>${history.length}</strong> predictions</span>
+            <span class="history-stat"><strong>${formats}</strong> formats</span>
+        `;
+    });
+</script>
+{% endblock %}

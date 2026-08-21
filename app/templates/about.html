@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}About — Cricket Predictor Pro{% endblock %}
+
+{% block content %}
+<section class="section about-section">
+    <div class="section-container">
+
+        <div class="section-header">
+            <span class="section-badge">ℹ️ About</span>
+            <h1 class="section-title" data-i18n="about.title">How It Works</h1>
+            <p class="section-subtitle" data-i18n="about.subtitle">
+                A plain-English guide to the ML models, features, and metrics behind Cricket Predictor Pro.
+            </p>
+        </div>
+
+        <!-- Pipeline Diagram -->
+        <div class="about-pipeline glass-card">
+            <h2 class="about-section-title">🔄 Prediction Pipeline</h2>
+            <div class="pipeline-steps">
+                <div class="pipeline-step">
+                    <div class="pipeline-step-icon">📊</div>
+                    <div class="pipeline-step-label">Data Generation</div>
+                    <div class="pipeline-step-desc">Format-specific synthetic cricket data (T10→Test) with realistic run distributions</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-icon">🤖</div>
+                    <div class="pipeline-step-label">Training</div>
+                    <div class="pipeline-step-desc">3 algorithms × 6 targets × 4 formats = <strong>72 trained models</strong></div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-icon">🔮</div>
+                    <div class="pipeline-step-label">Inference</div>
+                    <div class="pipeline-step-desc">Your inputs passed through all 3 models simultaneously</div>
+                </div>
+                <div class="pipeline-arrow">→</div>
+                <div class="pipeline-step">
+                    <div class="pipeline-step-icon">📈</div>
+                    <div class="pipeline-step-label">Results</div>
+                    <div class="pipeline-step-desc">Best model selected by lowest MAE, confidence shown as ±range</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Models -->
+        <div class="about-cards-grid">
+            <div class="about-card glass-card">
+                <div class="about-card-icon">📏</div>
+                <h3>Linear Regression</h3>
+                <p>Fits one straight-line weight per input feature. The simplest and fastest model — the baseline that all others must beat. Best for linear relationships like total innings runs.</p>
+                <div class="about-tag-row">
+                    <span class="about-tag">Fast</span>
+                    <span class="about-tag">Interpretable</span>
+                    <span class="about-tag">Baseline</span>
+                </div>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-card-icon">🌳</div>
+                <h3>Gradient Boosting</h3>
+                <p>Builds many shallow decision trees sequentially — each one corrects the previous one's mistakes. Captures non-linear patterns and interaction effects between features.</p>
+                <div class="about-tag-row">
+                    <span class="about-tag">Accurate</span>
+                    <span class="about-tag">Non-linear</span>
+                    <span class="about-tag">Ensemble</span>
+                </div>
+            </div>
+            <div class="about-card glass-card">
+                <div class="about-card-icon">📐</div>
+                <h3>Polynomial Regression</h3>
+                <p>Extends linear regression by adding squared features and cross-product interactions. Bridges the gap between linear and tree-based methods without full ensemble complexity.</p>
+                <div class="about-tag-row">
+                    <span class="about-tag">Hybrid</span>
+                    <span class="about-tag">Interactions</span>
+                    <span class="about-tag">Polynomial</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Glossary -->
+        <div class="glass-card about-glossary">
+            <h2 class="about-section-title">📖 Metrics Glossary</h2>
+            <div class="glossary-grid">
+                <div class="glossary-item">
+                    <div class="glossary-term">MAE <span class="glossary-badge">↓ lower is better</span></div>
+                    <div class="glossary-full">Mean Absolute Error</div>
+                    <p class="glossary-desc">The average difference between predicted and actual values, in the same units as the target (e.g. runs). An MAE of 2.4 means predictions are off by ~2.4 runs on average.</p>
+                </div>
+                <div class="glossary-item">
+                    <div class="glossary-term">R² <span class="glossary-badge">↑ higher is better</span></div>
+                    <div class="glossary-full">R-squared (Coefficient of Determination)</div>
+                    <p class="glossary-desc">How much of the variance in the target is explained by the model. R²=1.0 is perfect; R²=0 means no better than predicting the mean. Negative values mean it's worse than the mean.</p>
+                </div>
+                <div class="glossary-item">
+                    <div class="glossary-term">RMSE <span class="glossary-badge">↓ lower is better</span></div>
+                    <div class="glossary-full">Root Mean Squared Error</div>
+                    <p class="glossary-desc">Like MAE but penalises large errors more heavily. A model with low RMSE makes fewer catastrophically wrong predictions.</p>
+                </div>
+                <div class="glossary-item">
+                    <div class="glossary-term">Confidence <span class="glossary-badge">±MAE</span></div>
+                    <div class="glossary-full">Prediction Uncertainty Range</div>
+                    <p class="glossary-desc">The ±MAE range shown on predictions. If a model predicts 9.4 ± 2.1 runs, it means the true value is likely within [7.3, 11.5] based on test-set performance.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formats & Features -->
+        <div class="glass-card about-formats">
+            <h2 class="about-section-title">🏏 Formats & Features</h2>
+            <div class="table-wrapper">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Format</th>
+                            <th>Max Overs</th>
+                            <th>Avg Run Rate</th>
+                            <th>Score Range</th>
+                            <th>Training Samples</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, cfg in formats.items() %}
+                        <tr>
+                            <td><strong>{% if key == 't10' %}⚡{% elif key == 't20' %}🔥{% elif key == 'odi' %}🏆{% else %}🏛️{% endif %} {{ cfg.name }}</strong></td>
+                            <td>{{ cfg.max_overs }}</td>
+                            <td>{{ cfg.avg_run_rate }}</td>
+                            <td>{{ cfg.total_score_range[0] }}–{{ cfg.total_score_range[1] }}</td>
+                            <td>{{ cfg.samples }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="glass-card about-faq">
+            <h2 class="about-section-title">❓ FAQ</h2>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Is the data real or synthetic?</summary>
+                    <p>The training data is synthetically generated using statistically realistic distributions based on real-world cricket averages (run rates, batting averages, etc.). A real data import module for Cricsheet data is on the roadmap.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Why 3 models at once?</summary>
+                    <p>Different models excel at different targets. By running all 3 simultaneously you can see which one fits your scenario best, rather than blindly trusting one algorithm.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What does "Match Phase" mean?</summary>
+                    <p>Match Phase is a categorical input: <strong>0 = Powerplay</strong>, <strong>1 = Middle overs</strong>, <strong>2 = Death overs</strong>. It's the most influential feature for runs-per-over predictions.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I use the prediction API programmatically?</summary>
+                    <p>Yes! Visit <a href="/api/docs">API Docs</a> for a full interactive reference. The main endpoint is <code>POST /api/predict</code>.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>How are models retrained?</summary>
+                    <p>Run <code>python train_models.py</code> locally, or use the <a href="/admin/?key=YOUR_ADMIN_KEY">Admin retrain</a> web interface if you have the admin key configured.</p>
+                </details>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
