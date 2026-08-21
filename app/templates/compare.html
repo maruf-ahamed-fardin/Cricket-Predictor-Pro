@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}Model Comparison — Cricket Predictor Pro{% endblock %}
 
 {% block content %}
@@ -8,16 +7,38 @@
         <div class="section-header">
             <span class="section-badge">📊 Analytics</span>
             <h2 class="section-title">Model Comparison Dashboard</h2>
-            <p class="section-subtitle">Compare performance of all 3 models across formats and prediction targets.</p>
+            <p class="section-subtitle">Compare all 3 models across formats and targets. Toggle between bar and radar views.</p>
         </div>
 
         {% if metrics %}
+        <!-- Search + Filter Bar -->
+        <div class="compare-filter-bar glass-card">
+            <div class="compare-filter-row">
+                <input type="search" id="compareSearch" class="form-input compare-search"
+                       placeholder="🔍 Search target…" aria-label="Search prediction targets">
+                <select id="compareModelFilter" class="profile-select compare-filter-select" aria-label="Filter by model">
+                    <option value="">All Models</option>
+                    <option value="Linear Regression">Linear Regression</option>
+                    <option value="Gradient Boosting">Gradient Boosting</option>
+                    <option value="Polynomial Regression">Polynomial Regression</option>
+                </select>
+                <div class="chart-type-toggle" id="chartTypeToggle">
+                    <button class="chart-type-btn active" data-type="bar" aria-pressed="true">📊 Bar</button>
+                    <button class="chart-type-btn" data-type="radar" aria-pressed="false">🕸️ Radar</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Format Tabs -->
-        <div class="compare-tabs" id="compareTabs">
+        <div class="compare-tabs" id="compareTabs" role="tablist">
             {% for key, cfg in formats.items() %}
             <button class="compare-tab {% if loop.first %}compare-tab-active{% endif %}"
                     data-format="{{ key }}"
+                    role="tab"
+                    aria-selected="{{ 'true' if loop.first else 'false' }}"
+                    aria-controls="panel-{{ key }}"
                     onclick="switchFormat('{{ key }}', this)">
+                {% if key == 't10' %}⚡{% elif key == 't20' %}🔥{% elif key == 'odi' %}🏆{% else %}🏛️{% endif %}
                 {{ cfg.name }}
             </button>
             {% endfor %}
@@ -25,7 +46,9 @@
 
         {% for fmt_key, fmt_targets in metrics.items() %}
         <div class="compare-format-panel {% if loop.first %}panel-active{% endif %}"
-             id="panel-{{ fmt_key }}">
+             id="panel-{{ fmt_key }}"
+             role="tabpanel"
+             aria-labelledby="tab-{{ fmt_key }}">
 
             <h3 class="compare-format-title">
                 {% if fmt_key == 't10' %}⚡{% elif fmt_key == 't20' %}🔥{% elif fmt_key == 'odi' %}🏆{% else %}🏛️{% endif %}
@@ -33,14 +56,14 @@
             </h3>
 
             {% for target_key, model_results in fmt_targets.items() %}
-            <div class="compare-target-block">
+            <div class="compare-target-block" id="block-{{ fmt_key }}-{{ target_key }}">
                 <h4 class="compare-target-title">
                     {{ targets[target_key].icon }} {{ targets[target_key].name }}
                 </h4>
 
                 <!-- Metrics Table -->
                 <div class="table-wrapper">
-                    <table class="compare-table">
+                    <table class="compare-table" aria-label="{{ targets[target_key].name }} model metrics">
                         <thead>
                             <tr>
                                 <th>Model</th>
@@ -53,9 +76,7 @@
                         <tbody>
                             {% set ns = namespace(best_mae=999) %}
                             {% for model_name, m in model_results.items() %}
-                                {% if m.mae < ns.best_mae %}
-                                    {% set ns.best_mae = m.mae %}
-                                {% endif %}
+                                {% if m.mae < ns.best_mae %}{% set ns.best_mae = m.mae %}{% endif %}
                             {% endfor %}
 
                             {% for model_name, m in model_results.items() %}
@@ -82,14 +103,27 @@
                     </table>
                 </div>
 
-                <!-- Chart for this target -->
-                <div class="compare-chart-wrapper">
-                    <canvas id="chart-{{ fmt_key }}-{{ target_key }}" class="compare-chart"></canvas>
+                <!-- Charts (bar + radar toggled via JS) -->
+                <div class="compare-charts-wrap">
+                    <div class="compare-chart-wrapper chart-bar-wrap">
+                        <canvas id="bar-{{ fmt_key }}-{{ target_key }}" class="compare-chart"
+                                aria-label="{{ targets[target_key].name }} bar chart"></canvas>
+                    </div>
+                    <div class="compare-chart-wrapper chart-radar-wrap" style="display:none;">
+                        <canvas id="radar-{{ fmt_key }}-{{ target_key }}" class="compare-chart"
+                                aria-label="{{ targets[target_key].name }} radar chart"></canvas>
+                    </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% endfor %}
+
+        <!-- Summary Leaderboard -->
+        <div class="glass-card compare-leaderboard" style="margin-top:40px;">
+            <h3 class="compare-format-title">🏅 Overall Leaderboard (avg MAE across all targets)</h3>
+            <div id="leaderboardContent"><!-- Filled by JS --></div>
+        </div>
 
         {% else %}
         <div class="results-empty">
@@ -107,104 +141,157 @@
 <script>
     const allMetrics = {{ metrics | tojson }};
     const chartInstances = {};
+    let currentChartType = 'bar';
 
+    /* ── Chart rendering ─────────────────────────────────────────────────── */
     function renderCharts(fmtKey) {
         const fmtData = allMetrics[fmtKey];
         if (!fmtData) return;
 
         for (const [targetKey, models] of Object.entries(fmtData)) {
-            const canvasId = `chart-${fmtKey}-${targetKey}`;
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) continue;
-
-            // Destroy previous chart
-            if (chartInstances[canvasId]) {
-                chartInstances[canvasId].destroy();
-            }
-
-            const modelNames = Object.keys(models);
-            const maes = modelNames.map(m => models[m].mae);
-            const r2s = modelNames.map(m => models[m].r2);
-            const rmses = modelNames.map(m => models[m].rmse);
-
-            const bestIdx = maes.indexOf(Math.min(...maes));
-
-            chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: modelNames,
-                    datasets: [
-                        {
-                            label: 'MAE (lower = better)',
-                            data: maes,
-                            backgroundColor: modelNames.map((_, i) =>
-                                i === bestIdx ? 'rgba(74, 222, 128, 0.7)' : 'rgba(239, 68, 68, 0.5)'
-                            ),
-                            borderColor: modelNames.map((_, i) =>
-                                i === bestIdx ? '#4ade80' : '#ef4444'
-                            ),
-                            borderWidth: 2,
-                            borderRadius: 6,
-                        },
-                        {
-                            label: 'R² (higher = better)',
-                            data: r2s,
-                            backgroundColor: modelNames.map((_, i) =>
-                                i === bestIdx ? 'rgba(34, 211, 238, 0.7)' : 'rgba(139, 92, 246, 0.5)'
-                            ),
-                            borderColor: modelNames.map((_, i) =>
-                                i === bestIdx ? '#22d3ee' : '#8b5cf6'
-                            ),
-                            borderWidth: 2,
-                            borderRadius: 6,
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#94a3b8',
-                                font: { family: 'Inter' }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#94a3b8', font: { family: 'Inter' } },
-                            grid: { color: 'rgba(148, 163, 184, 0.08)' }
-                        },
-                        x: {
-                            ticks: { color: '#e2e8f0', font: { family: 'Inter', weight: '500', size: 11 } },
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
+            renderBarChart(fmtKey, targetKey, models);
+            renderRadarChart(fmtKey, targetKey, models);
         }
+        applyChartType(currentChartType);
     }
 
-    function switchFormat(fmtKey, btn) {
-        // Toggle active tab
-        document.querySelectorAll('.compare-tab').forEach(t => t.classList.remove('compare-tab-active'));
-        btn.classList.add('compare-tab-active');
+    function renderBarChart(fmtKey, targetKey, models) {
+        const canvasId = `bar-${fmtKey}-${targetKey}`;
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
 
-        // Toggle panels
+        const modelNames = Object.keys(models);
+        const maes  = modelNames.map(m => models[m].mae);
+        const r2s   = modelNames.map(m => models[m].r2);
+        const bestIdx = maes.indexOf(Math.min(...maes));
+
+        chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: modelNames,
+                datasets: [
+                    {
+                        label: 'MAE (lower = better)',
+                        data: maes,
+                        backgroundColor: modelNames.map((_,i) => i === bestIdx ? 'rgba(74,222,128,0.7)' : 'rgba(239,68,68,0.5)'),
+                        borderColor:     modelNames.map((_,i) => i === bestIdx ? '#4ade80' : '#ef4444'),
+                        borderWidth: 2, borderRadius: 6,
+                    },
+                    {
+                        label: 'R² (higher = better)',
+                        data: r2s,
+                        backgroundColor: modelNames.map((_,i) => i === bestIdx ? 'rgba(34,211,238,0.7)' : 'rgba(139,92,246,0.5)'),
+                        borderColor:     modelNames.map((_,i) => i === bestIdx ? '#22d3ee' : '#8b5cf6'),
+                        borderWidth: 2, borderRadius: 6,
+                    }
+                ]
+            },
+            options: chartOptions('bar')
+        });
+    }
+
+    function renderRadarChart(fmtKey, targetKey, models) {
+        const canvasId = `radar-${fmtKey}-${targetKey}`;
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
+
+        const modelNames = Object.keys(models);
+        const datasets = modelNames.map((m, i) => {
+            const d = models[m];
+            const r2clamped = Math.max(0, d.r2) * 100;
+            const maeScore  = Math.max(0, 100 - d.mae * 10);
+            const rmseScore = Math.max(0, 100 - d.rmse * 5);
+            const colors = ['rgba(74,222,128,0.35)', 'rgba(139,92,246,0.35)', 'rgba(34,211,238,0.35)'];
+            const borders = ['#4ade80', '#8b5cf6', '#22d3ee'];
+            return {
+                label: m,
+                data: [r2clamped, maeScore, rmseScore],
+                backgroundColor: colors[i] || 'rgba(148,163,184,0.2)',
+                borderColor: borders[i] || '#94a3b8',
+                borderWidth: 2, pointRadius: 4,
+            };
+        });
+
+        chartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+            type: 'radar',
+            data: { labels: ['R² Score', 'Accuracy (MAE)', 'Precision (RMSE)'], datasets },
+            options: chartOptions('radar')
+        });
+    }
+
+    function chartOptions(type) {
+        const base = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#94a3b8', font: { family: 'Inter' } } } },
+        };
+        if (type === 'bar') {
+            base.scales = {
+                y: { beginAtZero: true, ticks: { color: '#94a3b8', font: { family: 'Inter' } }, grid: { color: 'rgba(148,163,184,0.08)' } },
+                x: { ticks: { color: '#e2e8f0', font: { family: 'Inter', weight: '500', size: 11 } }, grid: { display: false } }
+            };
+        } else if (type === 'radar') {
+            base.scales = {
+                r: { ticks: { color: '#94a3b8', backdropColor: 'transparent' }, grid: { color: 'rgba(148,163,184,0.15)' }, pointLabels: { color: '#e2e8f0', font: { family: 'Inter', size: 12 } } }
+            };
+        }
+        return base;
+    }
+
+    /* ── Chart type toggle ───────────────────────────────────────────────── */
+    function applyChartType(type) {
+        document.querySelectorAll('.chart-bar-wrap').forEach(el => el.style.display = type === 'bar' ? '' : 'none');
+        document.querySelectorAll('.chart-radar-wrap').forEach(el => el.style.display = type === 'radar' ? '' : 'none');
+    }
+
+    document.getElementById('chartTypeToggle')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.chart-type-btn');
+        if (!btn) return;
+        document.querySelectorAll('.chart-type-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true');
+        currentChartType = btn.dataset.type;
+        applyChartType(currentChartType);
+    });
+
+    /* ── Format tabs ─────────────────────────────────────────────────────── */
+    function switchFormat(fmtKey, btn) {
+        document.querySelectorAll('.compare-tab').forEach(t => { t.classList.remove('compare-tab-active'); t.setAttribute('aria-selected', 'false'); });
+        btn.classList.add('compare-tab-active'); btn.setAttribute('aria-selected', 'true');
         document.querySelectorAll('.compare-format-panel').forEach(p => p.classList.remove('panel-active'));
         const panel = document.getElementById(`panel-${fmtKey}`);
-        if (panel) {
-            panel.classList.add('panel-active');
-            renderCharts(fmtKey);
-        }
+        if (panel) { panel.classList.add('panel-active'); renderCharts(fmtKey); }
     }
 
-    // Render initial charts
+    /* ── Leaderboard ─────────────────────────────────────────────────────── */
+    function buildLeaderboard() {
+        const modelTotals = {};
+        let count = 0;
+        for (const [fmt, targets] of Object.entries(allMetrics)) {
+            for (const [target, models] of Object.entries(targets)) {
+                count++;
+                for (const [model, m] of Object.entries(models)) {
+                    if (!modelTotals[model]) modelTotals[model] = 0;
+                    modelTotals[model] += m.mae;
+                }
+            }
+        }
+        const sorted = Object.entries(modelTotals).sort((a,b) => a[1]-b[1]);
+        const medals = ['🥇','🥈','🥉'];
+        document.getElementById('leaderboardContent').innerHTML = sorted.map(([name, total], i) => `
+            <div class="leaderboard-row ${i===0?'leaderboard-winner':''}">
+                <span class="leaderboard-rank">${medals[i]||'  '}</span>
+                <span class="leaderboard-name">${name}</span>
+                <span class="leaderboard-score">Avg MAE: <strong>${(total/count).toFixed(3)}</strong></span>
+                <div class="leaderboard-bar" style="width:${Math.max(10,(1-(total/count)/10)*100)}%"></div>
+            </div>`).join('');
+    }
+
+    /* ── Init ────────────────────────────────────────────────────────────── */
     document.addEventListener('DOMContentLoaded', () => {
         const firstFormat = Object.keys(allMetrics)[0];
         if (firstFormat) renderCharts(firstFormat);
+        buildLeaderboard();
     });
 </script>
 {% endif %}
