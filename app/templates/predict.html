@@ -8,7 +8,7 @@
         <!-- Header -->
         <div class="predict-header">
             <div class="predict-breadcrumb">
-                <a href="/">Home</a> / <a href="/predict/{{ fmt }}">{{ fmt_config.name }}</a> / {{ target_info.name }}
+                <a href="/" data-i18n="nav.home">Home</a> / <a href="/predict/{{ fmt }}">{{ fmt_config.name }}</a> / {{ target_info.name }}
             </div>
             <h1 class="predict-title">
                 <span class="predict-icon">{{ target_info.icon }}</span>
@@ -21,7 +21,7 @@
         <!-- Format & Target Switcher -->
         <div class="switcher-row">
             <div class="switcher-group">
-                <label class="switcher-label">Format</label>
+                <label class="switcher-label" data-i18n="predict.format">Format</label>
                 <div class="switcher-buttons" id="formatSwitcher">
                     {% for key, cfg in formats.items() %}
                     <a href="/predict/{{ key }}?target={{ target_key }}"
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="switcher-group">
-                <label class="switcher-label">Target</label>
+                <label class="switcher-label" data-i18n="predict.target">Target</label>
                 <div class="target-slider-wrapper">
                     <button class="slider-arrow slider-arrow-left" id="sliderLeft" aria-label="Scroll left">&#8249;</button>
                     <div class="target-slider-track" id="targetSlider">
@@ -53,35 +53,45 @@
             <!-- Prediction Form -->
             <div class="predict-form-card glass-card">
                 <div class="card-header">
-                    <h2 class="card-title">📝 Input Features</h2>
-                    <p class="card-subtitle">Enter match conditions to get predictions</p>
+                    <h2 class="card-title" data-i18n="predict.inputTitle">📝 Input Features</h2>
+                    <p class="card-subtitle" data-i18n="predict.inputSubtitle">Enter match conditions to get predictions</p>
                 </div>
 
-                <form method="POST" action="/predict/{{ fmt }}" id="predictForm">
+                <form method="POST" action="/predict/{{ fmt }}" id="predictForm" novalidate>
                     <input type="hidden" name="target_key" value="{{ target_key }}">
 
                     <div class="form-grid">
                         {% for col in feature_cols %}
+                        {% set r = ranges.get(col, {}) %}
                         <div class="form-group">
                             <label for="{{ col }}" class="form-label">
                                 {{ labels.get(col, col) }}
+                                {% if r.unit %}<span class="label-unit">({{ r.unit }})</span>{% endif %}
                             </label>
                             <input
                                 type="number"
-                                step="any"
+                                step="{{ r.step if r.step else 'any' }}"
                                 id="{{ col }}"
                                 name="{{ col }}"
                                 value="{{ defaults.get(col, 0) }}"
                                 class="form-input"
+                                {% if r.min is defined %}data-min="{{ r.min }}"{% endif %}
+                                {% if r.max is defined %}data-max="{{ r.max }}"{% endif %}
+                                {% if r.step is defined %}data-step="{{ r.step }}"{% endif %}
+                                aria-describedby="hint-{{ col }}"
                                 required
                             >
+                            {% if r.min is defined and r.max is defined %}
+                            <span class="range-hint" id="hint-{{ col }}">Range: {{ r.min }} – {{ r.max }}</span>
+                            <span class="range-error" id="err-{{ col }}">⚠ Must be {{ r.min }}–{{ r.max }}</span>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
 
                     <div class="form-actions">
                         <button type="submit" class="btn btn-primary btn-lg btn-block" id="predictBtn">
-                            <span class="btn-text">🔮 Predict with All 3 Models</span>
+                            <span class="btn-text" data-i18n="predict.btnPredict">🔮 Predict with All 3 Models</span>
                             <span class="btn-loading" style="display:none;">
                                 <span class="spinner"></span> Predicting...
                             </span>
@@ -94,8 +104,22 @@
             <div class="predict-results-card glass-card" id="resultsCard">
                 {% if result %}
                 <div class="card-header">
-                    <h2 class="card-title">📊 Prediction Results</h2>
+                    <h2 class="card-title" data-i18n="predict.resultsTitle">📊 Prediction Results</h2>
                     <p class="card-subtitle">{{ result.format }} — {{ result.target }}</p>
+                    <!-- Action Buttons -->
+                    <div class="result-action-bar">
+                        <button id="shareResultBtn" class="btn btn-outline btn-sm"
+                            data-format="{{ result.format }}"
+                            data-target="{{ result.target }}"
+                            data-best="{{ result.best_model }}"
+                            data-value="{{ result.predictions[result.best_model].value if result.best_model and result.predictions[result.best_model] is defined else '' }}"
+                            aria-label="Share result">
+                            📤 Share
+                        </button>
+                        <button id="printResultBtn" class="btn btn-outline btn-sm" aria-label="Print or save as PDF">
+                            🖨️ PDF
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Best Model Highlight -->
@@ -105,6 +129,16 @@
                     <div class="best-model-name">{{ result.best_model }}</div>
                     <div class="best-model-value">
                         {{ result.predictions[result.best_model].value }}
+                        {% set best_mae = result.predictions[result.best_model].mae %}
+                        {% if best_mae %}
+                        <span class="confidence-chip confidence-{% if best_mae < 2 %}high{% elif best_mae < 5 %}mid{% else %}low{% endif %}">
+                            ± {{ "%.1f"|format(best_mae) }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="confidence-label">
+                        {% set best_mae = result.predictions[result.best_model].mae %}
+                        {% if best_mae < 2 %}🟢 High confidence{% elif best_mae < 5 %}🟡 Medium confidence{% else %}🔴 Lower confidence{% endif %}
                     </div>
                 </div>
                 {% endif %}
@@ -118,6 +152,13 @@
                         {% endif %}
                         <h3 class="result-model-name">{{ model_name }}</h3>
                         <div class="result-value">{{ pred.value }}</div>
+                        {% if pred.mae %}
+                        <div class="confidence-bar-wrap" title="Confidence based on MAE">
+                            <div class="confidence-bar {% if pred.mae < 2 %}conf-high{% elif pred.mae < 5 %}conf-mid{% else %}conf-low{% endif %}"
+                                 style="width: {{ [100 - pred.mae * 8, 10]|max }}%"></div>
+                        </div>
+                        <span class="confidence-range">± {{ "%.1f"|format(pred.mae) }}</span>
+                        {% endif %}
                         <div class="result-metrics">
                             <div class="result-metric">
                                 <span class="metric-label">MAE</span>
@@ -138,14 +179,14 @@
 
                 <!-- Chart -->
                 <div class="result-chart-wrapper">
-                    <canvas id="predictionChart"></canvas>
+                    <canvas id="predictionChart" role="img" aria-label="Prediction comparison bar chart"></canvas>
                 </div>
 
                 {% else %}
                 <div class="results-empty">
                     <div class="empty-icon">🔮</div>
-                    <h3>No Predictions Yet</h3>
-                    <p>Fill in the features and click "Predict" to see results from all 3 models.</p>
+                    <h3 data-i18n="predict.emptyTitle">No Predictions Yet</h3>
+                    <p data-i18n="predict.emptyDesc">Fill in the features and click "Predict" to see results from all 3 models.</p>
                 </div>
                 {% endif %}
             </div>
@@ -157,6 +198,9 @@
 {% block scripts %}
 {% if result %}
 <script>
+    // Save to history
+    window.savePredictionToHistory({{ result | tojson }});
+
     // Render prediction comparison chart
     const ctx = document.getElementById('predictionChart').getContext('2d');
     const predictions = {{ result.predictions | tojson }};
@@ -164,17 +208,11 @@
 
     const labels = Object.keys(predictions);
     const values = labels.map(l => predictions[l].value);
-    const maes = labels.map(l => predictions[l].mae);
-
     const colors = labels.map(l =>
-        l === bestModel
-            ? 'rgba(74, 222, 128, 0.85)'
-            : 'rgba(139, 92, 246, 0.6)'
+        l === bestModel ? 'rgba(74, 222, 128, 0.85)' : 'rgba(139, 92, 246, 0.6)'
     );
     const borderColors = labels.map(l =>
-        l === bestModel
-            ? 'rgba(74, 222, 128, 1)'
-            : 'rgba(139, 92, 246, 1)'
+        l === bestModel ? 'rgba(74, 222, 128, 1)' : 'rgba(139, 92, 246, 1)'
     );
 
     new Chart(ctx, {
