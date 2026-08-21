@@ -12,6 +12,7 @@ from flask import (
     jsonify,
     current_app,
     send_from_directory,
+    abort,
 )
 
 from app.services.data_generator import FORMAT_CONFIG
@@ -59,6 +60,70 @@ def profile():
     )
 
 
+@predict_bp.route("/about")
+def about():
+    """About / How It Works page."""
+    return render_template(
+        "about.html",
+        formats=FORMAT_CONFIG,
+        targets=PREDICTION_TARGETS,
+    )
+
+
+@predict_bp.route("/history")
+def history():
+    """Prediction history page (data stored client-side in localStorage)."""
+    return render_template(
+        "history.html",
+        formats=FORMAT_CONFIG,
+        targets=PREDICTION_TARGETS,
+    )
+
+
+@predict_bp.route("/simulate/<fmt>")
+def simulate(fmt):
+    """Over-by-over innings simulator."""
+    if fmt not in FORMAT_CONFIG:
+        fmt = "t20"
+    return render_template(
+        "simulate.html",
+        fmt=fmt,
+        fmt_config=FORMAT_CONFIG[fmt],
+        formats=FORMAT_CONFIG,
+        targets=PREDICTION_TARGETS,
+    )
+
+
+@predict_bp.route("/compare/players")
+def player_compare():
+    """Side-by-side player prediction comparison."""
+    predictor = get_predictor()
+    fmt = request.args.get("fmt", "t20")
+    if fmt not in FORMAT_CONFIG:
+        fmt = "t20"
+    target_key = request.args.get("target", "runs_in_over")
+    if target_key not in PREDICTION_TARGETS:
+        target_key = "runs_in_over"
+
+    defaults = predictor.get_feature_defaults(fmt, target_key)
+    labels = predictor.get_feature_labels()
+    ranges = predictor.get_feature_ranges(fmt, target_key)
+    target_info = PREDICTION_TARGETS[target_key]
+
+    return render_template(
+        "player_compare.html",
+        fmt=fmt,
+        fmt_config=FORMAT_CONFIG[fmt],
+        formats=FORMAT_CONFIG,
+        target_key=target_key,
+        target_info=target_info,
+        targets=PREDICTION_TARGETS,
+        defaults=defaults,
+        labels=labels,
+        ranges=ranges,
+        feature_cols=target_info["feature_cols"],
+    )
+
 
 @predict_bp.route("/predict/<fmt>")
 def predict_page(fmt):
@@ -73,6 +138,7 @@ def predict_page(fmt):
     predictor = get_predictor()
     defaults = predictor.get_feature_defaults(fmt, target_key)
     labels = predictor.get_feature_labels()
+    ranges = predictor.get_feature_ranges(fmt, target_key)
     target_info = PREDICTION_TARGETS[target_key]
 
     return render_template(
@@ -85,6 +151,7 @@ def predict_page(fmt):
         targets=PREDICTION_TARGETS,
         defaults=defaults,
         labels=labels,
+        ranges=ranges,
         feature_cols=target_info["feature_cols"],
         result=None,
     )
@@ -103,6 +170,7 @@ def predict_submit(fmt):
     predictor = get_predictor()
     target_info = PREDICTION_TARGETS[target_key]
     labels = predictor.get_feature_labels()
+    ranges = predictor.get_feature_ranges(fmt, target_key)
 
     # Collect feature values from form
     features = {}
@@ -126,6 +194,7 @@ def predict_submit(fmt):
         targets=PREDICTION_TARGETS,
         defaults=features,
         labels=labels,
+        ranges=ranges,
         feature_cols=target_info["feature_cols"],
         result=result,
     )
@@ -142,6 +211,16 @@ def compare():
         formats=FORMAT_CONFIG,
         targets=PREDICTION_TARGETS,
         metrics=metrics,
+    )
+
+
+@predict_bp.route("/api/docs")
+def api_docs():
+    """Interactive API documentation page."""
+    return render_template(
+        "api_docs.html",
+        formats=FORMAT_CONFIG,
+        targets=PREDICTION_TARGETS,
     )
 
 
@@ -201,3 +280,16 @@ def api_defaults(fmt, target_key):
     defaults = predictor.get_feature_defaults(fmt, target_key)
     labels = predictor.get_feature_labels()
     return jsonify({"defaults": defaults, "labels": labels})
+
+
+@predict_bp.route("/api/ranges/<fmt>/<target_key>")
+def api_ranges(fmt, target_key):
+    """Get min/max/step/unit ranges for each feature in a format/target."""
+    if fmt not in FORMAT_CONFIG:
+        return jsonify({"error": f"Invalid format: {fmt}"}), 400
+    if target_key not in PREDICTION_TARGETS:
+        return jsonify({"error": f"Invalid target: {target_key}"}), 400
+
+    predictor = get_predictor()
+    ranges = predictor.get_feature_ranges(fmt, target_key)
+    return jsonify({"ranges": ranges})
