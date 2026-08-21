@@ -19,43 +19,43 @@
         <div class="shape shape-3"></div>
     </div>
     <div class="hero-container">
-        <div class="hero-badge">🤖 Powered by 3 ML Models</div>
-        <h1 class="hero-title">
+        <div class="hero-badge" data-i18n="hero.badge">🤖 Powered by 3 ML Models</div>
+        <h1 class="hero-title" data-i18n="hero.title" data-i18n-html="true">
             Predict Cricket Stats
             <span class="hero-gradient">Like Never Before</span>
         </h1>
-        <p class="hero-subtitle">
+        <p class="hero-subtitle" data-i18n="hero.subtitle" data-i18n-html="true">
             AI-powered predictions for <strong>T10, T20, ODI & Test</strong> cricket.
             Analyze runs, averages, overs & more using Linear Regression, Gradient Boosting and Polynomial Regression.
         </p>
         <div class="hero-actions">
             <a href="#formats" class="btn btn-primary btn-lg">
-                <span>Get Started</span>
+                <span data-i18n="hero.getStarted">Get Started</span>
                 <span class="btn-arrow">→</span>
             </a>
             <a href="/compare" class="btn btn-outline btn-lg">
-                <span>Compare Models</span>
+                <span data-i18n="hero.compareModels">Compare Models</span>
             </a>
         </div>
         <div class="hero-stats">
             <div class="hero-stat">
                 <span class="stat-number">4</span>
-                <span class="stat-label">Formats</span>
+                <span class="stat-label" data-i18n="hero.statFormats">Formats</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
                 <span class="stat-number">6</span>
-                <span class="stat-label">Predictions</span>
+                <span class="stat-label" data-i18n="hero.statPredictions">Predictions</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
                 <span class="stat-number">3</span>
-                <span class="stat-label">ML Models</span>
+                <span class="stat-label" data-i18n="hero.statMLModels">ML Models</span>
             </div>
             <div class="hero-stat-divider"></div>
             <div class="hero-stat">
                 <span class="stat-number">72</span>
-                <span class="stat-label">Trained Models</span>
+                <span class="stat-label" data-i18n="hero.statTrained">Trained Models</span>
             </div>
         </div>
     </div>
@@ -65,9 +65,9 @@
 <section class="section" id="formats">
     <div class="section-container">
         <div class="section-header">
-            <span class="section-badge">🏟️ Cricket Formats</span>
-            <h2 class="section-title">Choose Your Format</h2>
-            <p class="section-subtitle">Select a cricket format to start predicting. Each format has independently trained models.</p>
+            <span class="section-badge" data-i18n="formats.badge">🏟️ Cricket Formats</span>
+            <h2 class="section-title" data-i18n="formats.title">Choose Your Format</h2>
+            <p class="section-subtitle" data-i18n="formats.subtitle">Select a cricket format to start predicting. Each format has independently trained models.</p>
         </div>
 
         <div class="format-grid">
@@ -81,20 +81,20 @@
                     <h3 class="format-name">{{ cfg.name }}</h3>
                     <div class="format-details">
                         <div class="format-detail">
-                            <span class="detail-label">Max Overs</span>
+                            <span class="detail-label" data-i18n="formats.maxOvers">Max Overs</span>
                             <span class="detail-value">{{ cfg.max_overs }}</span>
                         </div>
                         <div class="format-detail">
-                            <span class="detail-label">Avg Run Rate</span>
+                            <span class="detail-label" data-i18n="formats.avgRunRate">Avg Run Rate</span>
                             <span class="detail-value">{{ cfg.avg_run_rate }}</span>
                         </div>
                         <div class="format-detail">
-                            <span class="detail-label">Score Range</span>
+                            <span class="detail-label" data-i18n="formats.scoreRange">Score Range</span>
                             <span class="detail-value">{{ cfg.total_score_range[0] }}–{{ cfg.total_score_range[1] }}</span>
                         </div>
                     </div>
                     <div class="format-cta">
-                        <span>Predict Now</span>
+                        <span data-i18n="formats.predictNow">Predict Now</span>
                         <span class="cta-arrow">→</span>
                     </div>
                 </div>
@@ -108,19 +108,19 @@
 <section class="section section-dark" id="targets">
     <div class="section-container">
         <div class="section-header">
-            <span class="section-badge">📊 Prediction Targets</span>
-            <h2 class="section-title">What Can We Predict?</h2>
-            <p class="section-subtitle">6 different prediction targets, each trained with format-specific data.</p>
+            <span class="section-badge" data-i18n="targets.badge">📊 Prediction Targets</span>
+            <h2 class="section-title" data-i18n="targets.title">What Can We Predict?</h2>
+            <p class="section-subtitle" data-i18n="targets.subtitle">6 different prediction targets, each trained with format-specific data.</p>
         </div>
 
         <div class="target-grid">
             {% for key, info in targets.items() %}
             <div class="target-card" id="target-{{ key }}">
                 <div class="target-icon">{{ info.icon }}</div>
-                <h3 class="target-name">{{ info.name }}</h3>
-                <p class="target-desc">{{ info.description }}</p>
+                <h3 class="target-name" data-i18n="targets.{{ key }}.name">{{ info.name }}</h3>
+                <p class="target-desc" data-i18n="targets.{{ key }}.desc">{{ info.description }}</p>
                 <a href="/predict/t20?target={{ key }}" class="target-link">
-                    Try in T20 →
+                    <span data-i18n="targets.tryInT20">Try in T20 →</span>
                 </a>
             </div>
             {% endfor %}
@@ -132,42 +132,42 @@
 <section class="section" id="models">
     <div class="section-container">
         <div class="section-header">
-            <span class="section-badge">🤖 Machine Learning</span>
-            <h2 class="section-title">3 Models Compared</h2>
-            <p class="section-subtitle">Every prediction is run through all 3 models so you can see which performs best.</p>
+            <span class="section-badge" data-i18n="models.badge">🤖 Machine Learning</span>
+            <h2 class="section-title" data-i18n="models.title">3 Models Compared</h2>
+            <p class="section-subtitle" data-i18n="models.subtitle">Every prediction is run through all 3 models so you can see which performs best.</p>
         </div>
 
         <div class="model-grid">
             <div class="model-card" id="model-linear">
-                <div class="model-badge model-badge-blue">Baseline</div>
-                <h3 class="model-name">Linear Regression</h3>
-                <p class="model-desc">One straight-line weight per input feature. Fast, interpretable, and the benchmark all others must beat.</p>
+                <div class="model-badge model-badge-blue" data-i18n="models.linear.badge">Baseline</div>
+                <h3 class="model-name" data-i18n="models.linear.name">Linear Regression</h3>
+                <p class="model-desc" data-i18n="models.linear.desc">One straight-line weight per input feature. Fast, interpretable, and the benchmark all others must beat.</p>
                 <div class="model-traits">
-                    <span class="trait">⚡ Fast</span>
-                    <span class="trait">🔍 Interpretable</span>
-                    <span class="trait">📏 Linear</span>
+                    <span class="trait" data-i18n="models.linear.trait1">⚡ Fast</span>
+                    <span class="trait" data-i18n="models.linear.trait2">🔍 Interpretable</span>
+                    <span class="trait" data-i18n="models.linear.trait3">📏 Linear</span>
                 </div>
             </div>
 
             <div class="model-card model-card-featured" id="model-gb">
-                <div class="model-badge model-badge-gold">Advanced</div>
-                <h3 class="model-name">Gradient Boosting</h3>
-                <p class="model-desc">Many small decision trees, each fixing the previous one's mistakes. Captures complex non-linear patterns.</p>
+                <div class="model-badge model-badge-gold" data-i18n="models.gb.badge">Advanced</div>
+                <h3 class="model-name" data-i18n="models.gb.name">Gradient Boosting</h3>
+                <p class="model-desc" data-i18n="models.gb.desc">Many small decision trees, each fixing the previous one's mistakes. Captures complex non-linear patterns.</p>
                 <div class="model-traits">
-                    <span class="trait">🎯 Accurate</span>
-                    <span class="trait">🌳 Ensemble</span>
-                    <span class="trait">📈 Non-linear</span>
+                    <span class="trait" data-i18n="models.gb.trait1">🎯 Accurate</span>
+                    <span class="trait" data-i18n="models.gb.trait2">🌳 Ensemble</span>
+                    <span class="trait" data-i18n="models.gb.trait3">📈 Non-linear</span>
                 </div>
             </div>
 
             <div class="model-card" id="model-poly">
-                <div class="model-badge model-badge-purple">Hybrid</div>
-                <h3 class="model-name">Polynomial Regression</h3>
-                <p class="model-desc">Linear regression with squared and cross-multiplied features. Captures interactions without tree complexity.</p>
+                <div class="model-badge model-badge-purple" data-i18n="models.poly.badge">Hybrid</div>
+                <h3 class="model-name" data-i18n="models.poly.name">Polynomial Regression</h3>
+                <p class="model-desc" data-i18n="models.poly.desc">Linear regression with squared and cross-multiplied features. Captures interactions without tree complexity.</p>
                 <div class="model-traits">
-                    <span class="trait">🔗 Interactions</span>
-                    <span class="trait">🧮 Polynomial</span>
-                    <span class="trait">⚖️ Balanced</span>
+                    <span class="trait" data-i18n="models.poly.trait1">🔗 Interactions</span>
+                    <span class="trait" data-i18n="models.poly.trait2">🧮 Polynomial</span>
+                    <span class="trait" data-i18n="models.poly.trait3">⚖️ Balanced</span>
                 </div>
             </div>
         </div>
@@ -178,11 +178,11 @@
 <section class="section cta-section">
     <div class="section-container">
         <div class="cta-card">
-            <h2 class="cta-title">Ready to Predict?</h2>
-            <p class="cta-text">Choose a format and start getting AI-powered cricket predictions instantly.</p>
+            <h2 class="cta-title" data-i18n="cta.title">Ready to Predict?</h2>
+            <p class="cta-text" data-i18n="cta.subtitle">Choose a format and start getting AI-powered cricket predictions instantly.</p>
             <div class="cta-buttons">
-                <a href="/predict/t20" class="btn btn-primary btn-lg">Start with T20</a>
-                <a href="/compare" class="btn btn-outline btn-lg">View Model Performance</a>
+                <a href="/predict/t20" class="btn btn-primary btn-lg" data-i18n="cta.startT20">Start with T20</a>
+                <a href="/compare" class="btn btn-outline btn-lg" data-i18n="cta.viewModelPerf">View Model Performance</a>
             </div>
         </div>
     </div>

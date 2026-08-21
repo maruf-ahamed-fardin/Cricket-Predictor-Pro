@@ -6,7 +6,7 @@
     <div class="section-container">
 
         <div class="section-header">
-            <span class="section-badge">ℹ️ About</span>
+            <span class="section-badge" data-i18n="about.badge">ℹ️ About</span>
             <h1 class="section-title" data-i18n="about.title">How It Works</h1>
             <p class="section-subtitle" data-i18n="about.subtitle">
                 A plain-English guide to the ML models, features, and metrics behind Cricket Predictor Pro.
@@ -15,30 +15,30 @@
 
         <!-- Pipeline Diagram -->
         <div class="about-pipeline glass-card">
-            <h2 class="about-section-title">🔄 Prediction Pipeline</h2>
+            <h2 class="about-section-title" data-i18n="about.pipeline">🔄 Prediction Pipeline</h2>
             <div class="pipeline-steps">
                 <div class="pipeline-step">
                     <div class="pipeline-step-icon">📊</div>
-                    <div class="pipeline-step-label">Data Generation</div>
-                    <div class="pipeline-step-desc">Format-specific synthetic cricket data (T10→Test) with realistic run distributions</div>
+                    <div class="pipeline-step-label" data-i18n="about.step1Title">Data Generation</div>
+                    <div class="pipeline-step-desc" data-i18n="about.step1Desc">Format-specific synthetic cricket data (T10→Test) with realistic run distributions</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step">
                     <div class="pipeline-step-icon">🤖</div>
-                    <div class="pipeline-step-label">Training</div>
-                    <div class="pipeline-step-desc">3 algorithms × 6 targets × 4 formats = <strong>72 trained models</strong></div>
+                    <div class="pipeline-step-label" data-i18n="about.step2Title">Training</div>
+                    <div class="pipeline-step-desc" data-i18n="about.step2Desc" data-i18n-html="true">3 algorithms × 6 targets × 4 formats = <strong>72 trained models</strong></div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step">
                     <div class="pipeline-step-icon">🔮</div>
-                    <div class="pipeline-step-label">Inference</div>
-                    <div class="pipeline-step-desc">Your inputs passed through all 3 models simultaneously</div>
+                    <div class="pipeline-step-label" data-i18n="about.step3Title">Inference</div>
+                    <div class="pipeline-step-desc" data-i18n="about.step3Desc">Your inputs passed through all 3 models simultaneously</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-step">
                     <div class="pipeline-step-icon">📈</div>
-                    <div class="pipeline-step-label">Results</div>
-                    <div class="pipeline-step-desc">Best model selected by lowest MAE, confidence shown as ±range</div>
+                    <div class="pipeline-step-label" data-i18n="about.step4Title">Results</div>
+                    <div class="pipeline-step-desc" data-i18n="about.step4Desc">Best model selected by lowest MAE, confidence shown as ±range</div>
                 </div>
             </div>
         </div>

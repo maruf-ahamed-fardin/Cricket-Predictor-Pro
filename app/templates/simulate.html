@@ -6,15 +6,15 @@
     <div class="section-container">
 
         <div class="section-header">
-            <span class="section-badge">⚙️ Simulator</span>
-            <h1 class="section-title">Over-by-Over Simulator</h1>
-            <p class="section-subtitle">Set opening conditions and simulate an entire innings over by over using the ML models.</p>
+            <span class="section-badge" data-i18n="simulate.badge">⚙️ Simulator</span>
+            <h1 class="section-title" data-i18n="simulate.title">Over-by-Over Simulator</h1>
+            <p class="section-subtitle" data-i18n="simulate.subtitle">Set opening conditions and simulate an entire innings over by over using the ML models.</p>
         </div>
 
         <!-- Format Switcher -->
         <div class="switcher-row">
             <div class="switcher-group">
-                <label class="switcher-label">Format</label>
+                <label class="switcher-label" data-i18n="predict.format">Format</label>
                 <div class="switcher-buttons">
                     {% for key, cfg in formats.items() %}
                     <a href="/simulate/{{ key }}"
@@ -30,43 +30,43 @@
             <!-- Controls -->
             <div class="glass-card simulate-controls">
                 <div class="card-header">
-                    <h2 class="card-title">🎛️ Match Setup</h2>
-                    <p class="card-subtitle">Set starting conditions for the innings</p>
+                    <h2 class="card-title" data-i18n="simulate.setupTitle">🎛️ Match Setup</h2>
+                    <p class="card-subtitle" data-i18n="simulate.setupSubtitle">Set starting conditions for the innings</p>
                 </div>
 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label class="form-label">Batting Average</label>
+                        <label class="form-label" data-i18n="simulate.batAvg">Batting Average</label>
                         <input type="number" id="sim-bat-avg" class="form-input" value="{{ fmt_config.avg_batting_avg }}" min="15" max="65" step="0.5">
-                        <span class="range-hint">Range: 15–65</span>
+                        <span class="range-hint"><span data-i18n="form.range">Range</span>: 15–65</span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Bowling Economy</label>
+                        <label class="form-label" data-i18n="simulate.bowlEcon">Bowling Economy</label>
                         <input type="number" id="sim-bowl-econ" class="form-input" value="{{ fmt_config.avg_economy }}" min="2" max="16" step="0.1">
-                        <span class="range-hint">Range: 2–16</span>
+                        <span class="range-hint"><span data-i18n="form.range">Range</span>: 2–16</span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Strike Rate</label>
+                        <label class="form-label" data-i18n="simulate.strikeRate">Strike Rate</label>
                         <input type="number" id="sim-sr" class="form-input" value="{{ fmt_config.avg_strike_rate }}" min="30" max="220" step="1">
-                        <span class="range-hint">Range: 30–220</span>
+                        <span class="range-hint"><span data-i18n="form.range">Range</span>: 30–220</span>
                     </div>
                 </div>
 
                 <div class="simulate-actions">
-                    <button id="startSimBtn" class="btn btn-primary btn-lg">
+                    <button id="startSimBtn" class="btn btn-primary btn-lg" data-i18n="simulate.start">
                         ▶️ Start Simulation
                     </button>
-                    <button id="resetSimBtn" class="btn btn-outline">
+                    <button id="resetSimBtn" class="btn btn-outline" data-i18n="simulate.reset">
                         🔄 Reset
                     </button>
                 </div>
 
                 <!-- Wicket control -->
                 <div class="wicket-control" id="wicketControl" style="display:none;">
-                    <button id="wicketBtn" class="btn btn-outline danger-btn">
+                    <button id="wicketBtn" class="btn btn-outline danger-btn" data-i18n="simulate.wicketFell">
                         🏏 Wicket Fell
                     </button>
-                    <span class="wicket-count">Wickets: <strong id="wicketDisplay">0</strong></span>
+                    <span class="wicket-count"><span data-i18n="simulate.wickets">Wickets</span>: <strong id="wicketDisplay">0</strong></span>
                 </div>
             </div>
 

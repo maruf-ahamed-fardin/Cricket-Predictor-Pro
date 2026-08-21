@@ -64,7 +64,7 @@
                         {% for col in feature_cols %}
                         {% set r = ranges.get(col, {}) %}
                         <div class="form-group">
-                            <label for="{{ col }}" class="form-label">
+                            <label for="{{ col }}" class="form-label" data-i18n="feat.{{ col }}">
                                 {{ labels.get(col, col) }}
                                 {% if r.unit %}<span class="label-unit">({{ r.unit }})</span>{% endif %}
                             </label>
@@ -82,8 +82,8 @@
                                 required
                             >
                             {% if r.min is defined and r.max is defined %}
-                            <span class="range-hint" id="hint-{{ col }}">Range: {{ r.min }} – {{ r.max }}</span>
-                            <span class="range-error" id="err-{{ col }}">⚠ Must be {{ r.min }}–{{ r.max }}</span>
+                            <span class="range-hint" id="hint-{{ col }}"><span data-i18n="form.range">Range</span>: {{ r.min }} – {{ r.max }}</span>
+                            <span class="range-error" id="err-{{ col }}">⚠ <span data-i18n="form.mustBe">Must be</span> {{ r.min }}–{{ r.max }}</span>
                             {% endif %}
                         </div>
                         {% endfor %}
@@ -93,7 +93,7 @@
                         <button type="submit" class="btn btn-primary btn-lg btn-block" id="predictBtn">
                             <span class="btn-text" data-i18n="predict.btnPredict">🔮 Predict with All 3 Models</span>
                             <span class="btn-loading" style="display:none;">
-                                <span class="spinner"></span> Predicting...
+                                <span class="spinner"></span> <span data-i18n="predict.predicting">Predicting...</span>
                             </span>
                         </button>
                     </div>
@@ -114,7 +114,7 @@
                             data-best="{{ result.best_model }}"
                             data-value="{{ result.predictions[result.best_model].value if result.best_model and result.predictions[result.best_model] is defined else '' }}"
                             aria-label="Share result">
-                            📤 Share
+                            <span data-i18n="predict.share">📤 Share</span>
                         </button>
                         <button id="printResultBtn" class="btn btn-outline btn-sm" aria-label="Print or save as PDF">
                             🖨️ PDF
@@ -125,7 +125,7 @@
                 <!-- Best Model Highlight -->
                 {% if result.best_model %}
                 <div class="best-model-banner">
-                    <div class="best-model-badge">🏆 Best Model</div>
+                    <div class="best-model-badge" data-i18n="predict.bestModel">🏆 Best Model</div>
                     <div class="best-model-name">{{ result.best_model }}</div>
                     <div class="best-model-value">
                         {{ result.predictions[result.best_model].value }}

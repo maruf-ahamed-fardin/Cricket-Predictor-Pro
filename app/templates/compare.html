@@ -5,9 +5,9 @@
 <section class="section compare-section">
     <div class="section-container">
         <div class="section-header">
-            <span class="section-badge">📊 Analytics</span>
-            <h2 class="section-title">Model Comparison Dashboard</h2>
-            <p class="section-subtitle">Compare all 3 models across formats and targets. Toggle between bar and radar views.</p>
+            <span class="section-badge" data-i18n="compare.badge">📊 Analytics</span>
+            <h2 class="section-title" data-i18n="compare.title">Model Comparison Dashboard</h2>
+            <p class="section-subtitle" data-i18n="compare.subtitle">Compare all 3 models across formats and targets. Toggle between bar and radar views.</p>
         </div>
 
         {% if metrics %}
@@ -15,16 +15,16 @@
         <div class="compare-filter-bar glass-card">
             <div class="compare-filter-row">
                 <input type="search" id="compareSearch" class="form-input compare-search"
-                       placeholder="🔍 Search target…" aria-label="Search prediction targets">
+                       placeholder="🔍 Search target…" data-i18n-placeholder="compare.searchPlaceholder" aria-label="Search prediction targets">
                 <select id="compareModelFilter" class="profile-select compare-filter-select" aria-label="Filter by model">
-                    <option value="">All Models</option>
+                    <option value="" data-i18n="compare.allModels">All Models</option>
                     <option value="Linear Regression">Linear Regression</option>
                     <option value="Gradient Boosting">Gradient Boosting</option>
                     <option value="Polynomial Regression">Polynomial Regression</option>
                 </select>
                 <div class="chart-type-toggle" id="chartTypeToggle">
-                    <button class="chart-type-btn active" data-type="bar" aria-pressed="true">📊 Bar</button>
-                    <button class="chart-type-btn" data-type="radar" aria-pressed="false">🕸️ Radar</button>
+                    <button class="chart-type-btn active" data-type="bar" aria-pressed="true" data-i18n="compare.bar">📊 Bar</button>
+                    <button class="chart-type-btn" data-type="radar" aria-pressed="false" data-i18n="compare.radar">🕸️ Radar</button>
                 </div>
             </div>
         </div>

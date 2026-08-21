@@ -6,7 +6,7 @@
     <div class="section-container">
 
         <div class="section-header">
-            <span class="section-badge">📋 History</span>
+            <span class="section-badge" data-i18n="history.badge">📋 History</span>
             <h1 class="section-title" data-i18n="history.title">Prediction History</h1>
             <p class="section-subtitle" data-i18n="history.subtitle">
                 Your last 50 predictions — stored locally in your browser.
@@ -19,10 +19,10 @@
                 <!-- Filled by JS -->
             </div>
             <div class="history-buttons">
-                <button id="exportHistoryCsvBtn" class="btn btn-outline btn-sm" aria-label="Export history as CSV">
+                <button id="exportHistoryCsvBtn" class="btn btn-outline btn-sm" aria-label="Export history as CSV" data-i18n="history.exportCsv">
                     📥 Export CSV
                 </button>
-                <button id="clearHistoryBtn" class="btn btn-outline btn-sm danger-btn" aria-label="Clear all history">
+                <button id="clearHistoryBtn" class="btn btn-outline btn-sm danger-btn" aria-label="Clear all history" data-i18n="history.clearAll">
                     🗑️ Clear All
                 </button>
             </div>
@@ -33,7 +33,7 @@
             <!-- Populated by app.js initHistoryPage() -->
             <div class="results-empty">
                 <div class="empty-icon">📋</div>
-                <h3>Loading…</h3>
+                <h3 data-i18n="history.loading">Loading…</h3>
             </div>
         </div>
 

@@ -499,24 +499,48 @@ function initI18n() {
 
 async function loadLanguage(lang) {
     try {
-        const resp = await fetch(`/static/translations/${lang}.json`);
+        const resp = await fetch(`/static/translations/${lang}.json?v=${Date.now()}`);
         _translations = await resp.json();
         applyTranslations(_translations);
         localStorage.setItem(I18N_KEY, lang);
         const btn = document.getElementById('langToggleBtn');
-        if (btn) btn.textContent = lang === 'en' ? 'বাংলা' : 'EN';
+        if (btn) {
+            btn.textContent = lang === 'en' ? 'বাংলা' : 'English';
+            btn.setAttribute('title', lang === 'en' ? 'Switch to বাংলা' : 'Switch to English');
+        }
         document.documentElement.lang = lang;
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang, translations: _translations } }));
     } catch (e) {
         console.warn('i18n load failed:', e);
     }
 }
 
 function applyTranslations(t) {
+    if (!t) return;
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (t[key]) el.textContent = t[key];
+        if (t[key] !== undefined) {
+            if (el.hasAttribute('data-i18n-html') || /<[a-z][\s\S]*>/i.test(t[key])) {
+                el.innerHTML = t[key];
+            } else {
+                el.textContent = t[key];
+            }
+        }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (t[key] !== undefined) el.title = t[key];
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+        const key = el.getAttribute('data-i18n-aria');
+        if (t[key] !== undefined) el.setAttribute('aria-label', t[key]);
     });
 }
+window.applyTranslations = applyTranslations;
 
 
 /* ─── PWA Service Worker ──────────────────────────────────────────────────── */

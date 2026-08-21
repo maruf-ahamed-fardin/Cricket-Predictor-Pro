@@ -6,15 +6,15 @@
     <div class="section-container">
 
         <div class="section-header">
-            <span class="section-badge">⚔️ Player vs Player</span>
-            <h1 class="section-title">Player Comparison</h1>
-            <p class="section-subtitle">Compare two different match scenarios side by side across all 3 ML models.</p>
+            <span class="section-badge" data-i18n="playerCompare.badge">⚔️ Player vs Player</span>
+            <h1 class="section-title" data-i18n="playerCompare.title">Player Comparison</h1>
+            <p class="section-subtitle" data-i18n="playerCompare.subtitle">Compare two different match scenarios side by side across all 3 ML models.</p>
         </div>
 
         <!-- Format & Target Switcher -->
         <div class="switcher-row">
             <div class="switcher-group">
-                <label class="switcher-label">Format</label>
+                <label class="switcher-label" data-i18n="predict.format">Format</label>
                 <div class="switcher-buttons">
                     {% for key, cfg in formats.items() %}
                     <a href="/compare/players?fmt={{ key }}&target={{ target_key }}"
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="switcher-group">
-                <label class="switcher-label">Target</label>
+                <label class="switcher-label" data-i18n="predict.target">Target</label>
                 <div class="target-slider-wrapper">
                     <button class="slider-arrow slider-arrow-left" id="sliderLeft">&#8249;</button>
                     <div class="target-slider-track" id="targetSlider">
@@ -43,17 +43,17 @@
             <!-- Player A -->
             <div class="glass-card player-form-card" id="playerACard">
                 <div class="card-header player-a-header">
-                    <h2 class="card-title">🔵 Player / Scenario A</h2>
+                    <h2 class="card-title" data-i18n="playerCompare.playerA">🔵 Player / Scenario A</h2>
                 </div>
                 <div class="form-grid" id="formA">
                     {% for col in feature_cols %}
                     {% set r = ranges.get(col, {}) %}
                     <div class="form-group">
-                        <label class="form-label">{{ labels.get(col, col) }}</label>
+                        <label class="form-label" data-i18n="feat.{{ col }}">{{ labels.get(col, col) }}</label>
                         <input type="number" class="form-input feat-a" data-col="{{ col }}"
-                               value="{{ defaults.get(col, 0) }}"
-                               {% if r.min is defined %}min="{{ r.min }}" max="{{ r.max }}" step="{{ r.step }}"{% endif %}>
-                        {% if r.min is defined %}<span class="range-hint">{{ r.min }}–{{ r.max }}</span>{% endif %}
+                                value="{{ defaults.get(col, 0) }}"
+                                {% if r.min is defined %}min="{{ r.min }}" max="{{ r.max }}" step="{{ r.step }}"{% endif %}>
+                        {% if r.min is defined %}<span class="range-hint"><span data-i18n="form.range">Range</span>: {{ r.min }}–{{ r.max }}</span>{% endif %}
                     </div>
                     {% endfor %}
                 </div>
@@ -67,17 +67,17 @@
             <!-- Player B -->
             <div class="glass-card player-form-card" id="playerBCard">
                 <div class="card-header player-b-header">
-                    <h2 class="card-title">🔴 Player / Scenario B</h2>
+                    <h2 class="card-title" data-i18n="playerCompare.playerB">🔴 Player / Scenario B</h2>
                 </div>
                 <div class="form-grid" id="formB">
                     {% for col in feature_cols %}
                     {% set r = ranges.get(col, {}) %}
                     <div class="form-group">
-                        <label class="form-label">{{ labels.get(col, col) }}</label>
+                        <label class="form-label" data-i18n="feat.{{ col }}">{{ labels.get(col, col) }}</label>
                         <input type="number" class="form-input feat-b" data-col="{{ col }}"
-                               value="{{ defaults.get(col, 0) }}"
-                               {% if r.min is defined %}min="{{ r.min }}" max="{{ r.max }}" step="{{ r.step }}"{% endif %}>
-                        {% if r.min is defined %}<span class="range-hint">{{ r.min }}–{{ r.max }}</span>{% endif %}
+                                value="{{ defaults.get(col, 0) }}"
+                                {% if r.min is defined %}min="{{ r.min }}" max="{{ r.max }}" step="{{ r.step }}"{% endif %}>
+                        {% if r.min is defined %}<span class="range-hint"><span data-i18n="form.range">Range</span>: {{ r.min }}–{{ r.max }}</span>{% endif %}
                     </div>
                     {% endfor %}
                 </div>
@@ -86,7 +86,7 @@
 
         <!-- Compare Button -->
         <div style="text-align:center; margin: 32px 0;">
-            <button id="comparePlayersBtn" class="btn btn-primary btn-lg">
+            <button id="comparePlayersBtn" class="btn btn-primary btn-lg" data-i18n="playerCompare.compareBtn">
                 ⚔️ Compare Both Scenarios
             </button>
         </div>
