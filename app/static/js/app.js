@@ -549,6 +549,7 @@ const DEFAULT_SETTINGS = {
     theme: 'dark',
     compact: false,
     animations: true,
+    heroVideoTheme: 'stadium_night',
     defaultFormat: 't20',
     defaultModel: 'best',
     showConfidence: true,
@@ -730,12 +731,33 @@ window.applyPlatformSettings = function(settings) {
     // 2. Compact density mode
     document.body.classList.toggle('compact-mode', !!s.compact);
 
-    // 3. Motion / Animations
+    // 3. Motion / Animations & Hero Video
     document.body.classList.toggle('reduce-motion', !s.animations);
     const heroVid = document.querySelector('.hero-video');
     if (heroVid) {
-        if (!s.animations) heroVid.pause();
-        else heroVid.play().catch(() => {});
+        if (!s.animations) {
+            heroVid.pause();
+        } else {
+            // Update video theme if specified
+            if (s.heroVideoTheme) {
+                const targetSrc = `/static/videos/${s.heroVideoTheme}.mp4`;
+                const currentSrc = heroVid.getAttribute('src') || heroVid.querySelector('source')?.getAttribute('src');
+                if (currentSrc && !currentSrc.includes(s.heroVideoTheme)) {
+                    heroVid.style.opacity = '0';
+                    setTimeout(() => {
+                        heroVid.src = targetSrc;
+                        heroVid.poster = `/static/img/${s.heroVideoTheme}_poster.jpg`;
+                        heroVid.load();
+                        heroVid.play().catch(() => {});
+                        heroVid.style.opacity = '';
+                    }, 250);
+                } else {
+                    heroVid.play().catch(() => {});
+                }
+            } else {
+                heroVid.play().catch(() => {});
+            }
+        }
     }
 
     // 4. Confidence intervals display
@@ -792,6 +814,9 @@ function updateSettingsModalUI(s) {
 
     const oversSelect = document.getElementById('settingOversNotation');
     if (oversSelect && s.oversNotation) oversSelect.value = s.oversNotation;
+
+    const videoSelect = document.getElementById('settingHeroVideoTheme');
+    if (videoSelect && s.heroVideoTheme) videoSelect.value = s.heroVideoTheme;
 
     // Stored predictions count
     const historyDesc = document.getElementById('settingsHistoryCountDesc');
@@ -915,6 +940,15 @@ function initSettingsDropdown() {
             playCricketSound('click');
             savePlatformSettings({ animations: e.target.checked });
             showToast(e.target.checked ? 'Animations & video enabled' : 'Reduced motion enabled', 'info', 2000);
+        });
+    }
+
+    const videoSelect = document.getElementById('settingHeroVideoTheme');
+    if (videoSelect) {
+        videoSelect.addEventListener('change', (e) => {
+            playCricketSound('click');
+            savePlatformSettings({ heroVideoTheme: e.target.value });
+            showToast('Hero video theme updated!', 'success', 2000);
         });
     }
 
