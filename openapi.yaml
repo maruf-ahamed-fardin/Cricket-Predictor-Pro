@@ -1,0 +1,160 @@
+openapi: 3.0.3
+info:
+  title: Cricket Predictor Pro API
+  version: 2.0.0
+  description: >
+    AI-powered REST API for predicting cricket statistics across T10, T20, ODI,
+    and Test formats using Linear Regression, Gradient Boosting, and Polynomial Regression.
+  contact:
+    name: Cricket Predictor Pro
+    url: https://github.com/maruf-ahamed-fardin/Cricket-Predictor-Pro
+
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Returns health and model loading status.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  models_loaded:
+                    type: boolean
+                    example: true
+
+  /api/formats:
+    get:
+      summary: List Supported Formats
+      description: Returns all available cricket formats with metadata.
+      responses:
+        '200':
+          description: Formats dictionary
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    max_overs:
+                      type: integer
+
+  /api/targets:
+    get:
+      summary: List Prediction Targets
+      description: Returns all available prediction targets with icons and descriptions.
+      responses:
+        '200':
+          description: Targets dictionary
+
+  /api/defaults/{format}/{target}:
+    get:
+      summary: Get Feature Defaults & Labels
+      parameters:
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [t10, t20, odi, test]
+        - name: target
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [runs_in_over, wickets_in_over, next_over_runs, total_innings_runs, powerplay_score, death_overs_runs]
+      responses:
+        '200':
+          description: Defaults and label mappings
+
+  /api/ranges/{format}/{target}:
+    get:
+      summary: Get Feature Ranges
+      parameters:
+        - name: format
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [t10, t20, odi, test]
+        - name: target
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Min, max, step, and unit metadata for each feature
+
+  /api/predict:
+    post:
+      summary: Run Prediction
+      description: Accepts match features and returns predictions from all 3 algorithms with metrics.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format, target, features]
+              properties:
+                format:
+                  type: string
+                  enum: [t10, t20, odi, test]
+                  example: t20
+                target:
+                  type: string
+                  example: runs_in_over
+                features:
+                  type: object
+                  example:
+                    over_number: 15
+                    wickets_fallen: 3
+                    batsman_avg: 38.0
+                    bowler_econ: 8.5
+                    strike_rate: 135.0
+                    match_phase: 2
+      responses:
+        '200':
+          description: Prediction results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  format:
+                    type: string
+                  format_key:
+                    type: string
+                  target:
+                    type: string
+                  best_model:
+                    type: string
+                  predictions:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        value:
+                          type: number
+                        mae:
+                          type: number
+                        r2:
+                          type: number
+                        rmse:
+                          type: number
+        '400':
+          description: Invalid input / format / target
